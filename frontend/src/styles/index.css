@@ -1,0 +1,474 @@
+@import './tokens.css';
+
+/* Global Reset & Base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+}
+
+/* Background Cyber Grid & Vignette */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 1;
+  background: 
+    radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.03) 0%, transparent 70%),
+    linear-gradient(rgba(0, 240, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 40px 40px, 40px 40px;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(4, 7, 17, 0.6);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 240, 255, 0.25);
+  border-radius: var(--radius-xs);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 240, 255, 0.6);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+}
+
+/* Typography Utilities */
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-cyber {
+  font-family: var(--font-cyber);
+}
+
+.text-xs { font-size: 0.72rem; line-height: 1rem; }
+.text-sm { font-size: 0.82rem; line-height: 1.25rem; }
+.text-base { font-size: 0.92rem; line-height: 1.4rem; }
+.text-lg { font-size: 1.15rem; line-height: 1.5rem; }
+.text-xl { font-size: 1.4rem; line-height: 1.75rem; }
+.text-2xl { font-size: 1.85rem; line-height: 2.1rem; }
+.text-3xl { font-size: 2.2rem; line-height: 2.5rem; }
+
+.tracking-wider { letter-spacing: 0.08em; }
+.tracking-widest { letter-spacing: 0.18em; }
+.uppercase { text-transform: uppercase; }
+
+/* 100X Award-Winning Floating Header & Glass UI System */
+.floating-glass-bar {
+  background: rgba(6, 11, 24, 0.78);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: 9999px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 240, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.floating-glass-bar:hover {
+  border-color: rgba(0, 240, 255, 0.4);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.85), 0 0 25px rgba(0, 240, 255, 0.25);
+}
+
+.floating-glass-dock {
+  background: rgba(6, 11, 24, 0.82);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 240, 255, 0.1);
+}
+
+.glass-drawer {
+  position: absolute;
+  top: 76px;
+  right: 20px;
+  bottom: 20px;
+  width: 440px;
+  max-width: calc(100vw - 40px);
+  background: rgba(6, 11, 24, 0.88);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1px solid rgba(0, 240, 255, 0.28);
+  border-radius: 20px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.9), 0 0 35px rgba(0, 240, 255, 0.18);
+  z-index: 45;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.persona-container {
+  position: absolute;
+  top: 76px;
+  left: 24px;
+  right: 24px;
+  bottom: 24px;
+  display: grid;
+  gap: 24px;
+  z-index: 30;
+  animation: fadeInScale 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 10X Aerospace Mission-Control Glass Panels */
+.tactical-panel {
+  background: var(--bg-surface-1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-panel);
+  position: relative;
+  overflow: hidden;
+}
+
+.tactical-glass-card {
+  background: var(--bg-glass-card);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-panel);
+  transition: all var(--transition-normal);
+}
+
+.tactical-glass-card:hover {
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow-overlay);
+}
+
+.tactical-panel-solid {
+  background: var(--bg-surface-solid);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+}
+
+.tactical-panel-glow {
+  border-color: var(--border-accent-strong);
+  box-shadow: var(--border-glow);
+}
+
+.tactical-panel-danger {
+  border-color: var(--color-critical);
+  box-shadow: var(--border-glow-danger);
+}
+
+.tactical-panel-success {
+  border-color: var(--color-success);
+  box-shadow: var(--border-glow-success);
+}
+
+/* Aerospace Cyber Corner Cuts */
+.cyber-corner {
+  position: relative;
+}
+
+.cyber-corner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid var(--accent-cyan);
+  border-left: 2px solid var(--accent-cyan);
+  pointer-events: none;
+}
+
+.cyber-corner::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-bottom: 2px solid var(--accent-cyan);
+  border-right: 2px solid var(--accent-cyan);
+  pointer-events: none;
+}
+
+/* Cyber Clipped Button */
+.cyber-btn {
+  position: relative;
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid var(--border-accent);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  padding: 8px 16px;
+  border-radius: var(--radius-xs);
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cyber-btn:hover {
+  background: rgba(0, 240, 255, 0.25);
+  border-color: var(--accent-cyan);
+  box-shadow: var(--shadow-neon-cyan);
+  transform: translateY(-1px);
+}
+
+.cyber-btn-danger {
+  background: rgba(255, 51, 102, 0.15);
+  border-color: var(--color-critical);
+  color: #fff;
+}
+
+.cyber-btn-danger:hover {
+  background: rgba(255, 51, 102, 0.35);
+  box-shadow: var(--shadow-neon-danger);
+}
+
+.cyber-btn-success {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: var(--color-success);
+  color: #fff;
+}
+
+.cyber-btn-success:hover {
+  background: rgba(16, 185, 129, 0.35);
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.55);
+}
+
+/* Animated Pulse Glows */
+@keyframes neon-pulse-glow {
+  0%, 100% {
+    opacity: 0.7;
+    filter: drop-shadow(0 0 8px var(--accent-cyan));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 20px var(--accent-cyan));
+  }
+}
+
+.animate-pulse-glow {
+  animation: neon-pulse-glow 2.4s ease-in-out infinite;
+}
+
+@keyframes radar-sweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-radar-sweep {
+  animation: radar-sweep 6s linear infinite;
+}
+
+
+/* Status Badges */
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.badge-status-active {
+  background: var(--accent-cyan-dim);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+}
+
+.badge-status-success {
+  background: var(--color-success-dim);
+  color: var(--color-success);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.badge-status-warning {
+  background: var(--color-warning-dim);
+  color: var(--color-warning);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.badge-status-critical {
+  background: var(--color-critical-dim);
+  color: var(--color-critical);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+}
+
+.badge-status-dormant {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.badge-status-intelligence {
+  background: var(--color-intelligence-dim);
+  color: var(--color-intelligence);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+}
+
+/* Pulsing Status Dot */
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  position: relative;
+}
+
+.status-dot-active {
+  background-color: var(--accent-cyan);
+  box-shadow: 0 0 8px var(--accent-cyan);
+  animation: pulse-dot 2s infinite ease-in-out;
+}
+
+.status-dot-success {
+  background-color: var(--color-success);
+  box-shadow: 0 0 8px var(--color-success);
+}
+
+.status-dot-critical {
+  background-color: var(--color-critical);
+  box-shadow: 0 0 10px var(--color-critical);
+  animation: pulse-critical 1.2s infinite ease-in-out;
+}
+
+.status-dot-warning {
+  background-color: var(--color-warning);
+  box-shadow: 0 0 8px var(--color-warning);
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.35); opacity: 0.6; }
+}
+
+@keyframes pulse-critical {
+  0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 8px var(--color-critical)); }
+  50% { transform: scale(1.6); opacity: 0.4; filter: drop-shadow(0 0 16px var(--color-critical)); }
+}
+
+/* Tactical Buttons */
+.tactical-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  padding: 6px 14px;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.tactical-btn:hover {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: var(--accent-cyan);
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+}
+
+.tactical-btn:active {
+  transform: scale(0.98);
+}
+
+.tactical-btn-primary {
+  background: rgba(56, 189, 248, 0.18);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.tactical-btn-primary:hover {
+  background: var(--accent-cyan);
+  color: #07090e;
+  font-weight: 600;
+}
+
+.tactical-btn-danger {
+  background: var(--color-critical-dim);
+  border-color: var(--color-critical);
+  color: var(--color-critical);
+}
+
+.tactical-btn-danger:hover {
+  background: var(--color-critical);
+  color: #ffffff;
+}
+
+/* Spatial Grid Background Lines */
+.bg-grid-pattern {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
+/* Reduced Motion Mode Support */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

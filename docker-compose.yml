@@ -1,0 +1,88 @@
+services:
+  # ----------------------------------------
+  # PostgreSQL 16 + PgVector Extension
+  # ----------------------------------------
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: logistics_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin_password
+      POSTGRES_DB: logistics_brain
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d logistics_brain"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ----------------------------------------
+  # Redis 7 (Event Pub/Sub & Caching)
+  # ----------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: logistics_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ----------------------------------------
+  # FastAPI Backend Service
+  # ----------------------------------------
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: logistics_backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://admin:admin_password@db:5432/logistics_brain
+      - REDIS_URL=redis://redis:6379/0
+      - ENVIRONMENT=production
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.5-flash}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-SUPER_SECRET_LOGISTICS_BRAIN_KEY_CHANGE_IN_PROD}
+    ports:
+      - "8000:8000"
+    volumes:
+      # Optional: Mount logs if required
+      - backend_logs:/app/logs
+
+  # ----------------------------------------
+  # React + Vite Frontend (Nginx)
+  # ----------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # For local Docker testing, we route to localhost:8000
+        # In cloud prod, change this to your actual API domain
+        - VITE_API_URL=http://localhost:8000/api/v1 
+    container_name: logistics_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  postgres_data:
+  redis_data:
+  backend_logs:
