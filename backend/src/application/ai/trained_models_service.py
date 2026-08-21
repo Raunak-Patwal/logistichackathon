@@ -11,8 +11,17 @@ Integrates Scikit-Learn, XGBoost, and Preprocessor pipelines (.joblib) for:
 import os
 import math
 import logging
+import warnings
 from typing import Dict, Any, List, Optional, Tuple, Union
 import numpy as np
+
+# Suppress minor scikit-learn version differences when loading joblib artifacts
+warnings.filterwarnings("ignore", category=UserWarning)
+try:
+    from sklearn.exceptions import InconsistentVersionWarning
+    warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
+except ImportError:
+    pass
 
 logger = logging.getLogger(__name__)
 
