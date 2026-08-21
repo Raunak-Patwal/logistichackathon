@@ -40,6 +40,12 @@ export const WorldCanvas: React.FC = () => {
     return [];
   }, [parcels, selectedType, selectedId]);
 
+  // Dynamic performance scaling for weaker laptops
+  const isLowEnd = 
+    (typeof window !== 'undefined' && window.navigator && window.navigator.hardwareConcurrency <= 4) || 
+    (typeof window !== 'undefined' && /Mobi|Android/i.test(window.navigator.userAgent));
+  const dpr = typeof window !== 'undefined' ? Math.min(window.devicePixelRatio, 1.5) : 1;
+
   return (
     <div
       style={{
@@ -54,17 +60,18 @@ export const WorldCanvas: React.FC = () => {
       onClick={() => clearSelection()}
     >
       <Canvas
-        shadows
+        shadows={!isLowEnd}
+        dpr={isLowEnd ? 1 : [1, dpr]}
         camera={{ position: [0, 26, 30], fov: 45 }}
         gl={{
-          antialias: true,
+          antialias: !isLowEnd,
           alpha: false,
           powerPreference: 'high-performance',
         }}
       >
         <Suspense fallback={null}>
           <SceneEnvironment />
-          <EffectPipeline />
+          {!isLowEnd && <EffectPipeline />}
           <SpatialGrid />
 
           {/* Logistics Routes */}

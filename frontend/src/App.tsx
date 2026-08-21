@@ -24,7 +24,6 @@ import { ArchitectureView } from './components/views/ArchitectureView';
 import { FourUspsCommandView } from './components/views/FourUspsCommandView';
 import { SstGnnTrafficView } from './components/views/SstGnnTrafficView';
 
-import { CustomerCopilotView } from './components/views/CustomerCopilotView';
 import { DriverCopilotView } from './components/views/DriverCopilotView';
 import { ExecutiveCopilotView } from './components/views/ExecutiveCopilotView';
 
@@ -252,9 +251,6 @@ export const App: React.FC = () => {
           <MapModeSwitcher />
         </>
       )}
-
-      {/* 2. CUSTOMER PERSONA: Conversational Shipment Assistant */}
-      {allowed && activePersona === 'CUSTOMER' && <CustomerCopilotView />}
 
       {/* 3. DRIVER PERSONA: In-Cab Dynamic Priority HUD & Traffic Detour */}
       {allowed && activePersona === 'DRIVER' && <DriverCopilotView />}

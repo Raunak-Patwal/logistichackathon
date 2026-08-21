@@ -69,8 +69,6 @@ export const TopTelemetryBar: React.FC = () => {
         return { bg: 'rgba(236, 72, 153, 0.15)', border: '#ec4899', text: '#ec4899' };
       case 'DRIVER':
         return { bg: 'rgba(245, 158, 11, 0.15)', border: '#f59e0b', text: '#f59e0b' };
-      case 'CUSTOMER':
-        return { bg: 'rgba(16, 185, 129, 0.15)', border: '#10b981', text: '#10b981' };
       case 'EXECUTIVE':
         return { bg: 'rgba(168, 85, 247, 0.15)', border: '#a855f7', text: '#a855f7' };
       case 'DISPATCHER':
@@ -148,7 +146,6 @@ export const TopTelemetryBar: React.FC = () => {
       >
         {[
           { id: 'OPERATIONS', label: '3D TWIN MISSION HUB', icon: Globe },
-          { id: 'CUSTOMER', label: 'CUSTOMER COPILOT', icon: Package },
           { id: 'DRIVER', label: 'DRIVER IN-CAB HUD', icon: Truck },
           { id: 'EXECUTIVE', label: 'CEO STRATEGY', icon: TrendingUp },
         ].map((p) => {

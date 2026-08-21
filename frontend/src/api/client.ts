@@ -12,7 +12,7 @@ export type UserRole =
   | 'WAREHOUSE_MANAGER'
   | 'READ_ONLY';
 
-export type PersonaMode = 'OPERATIONS' | 'DRIVER' | 'CUSTOMER' | 'EXECUTIVE';
+export type PersonaMode = 'OPERATIONS' | 'DRIVER' | 'EXECUTIVE';
 
 export interface AuthUser {
   username: string;
@@ -111,31 +111,6 @@ export const FALLBACK_DEMO_USERS: UserPublicProfile[] = [
     auth_provider: 'google',
     avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
     meta: { google_driver_sync: true, active_route: 'BOM-BLR' },
-  },
-  {
-    username: 'customer_aarav',
-    role: 'CUSTOMER',
-    persona: 'CUSTOMER',
-    full_name: 'Aarav Patel',
-    email: 'aarav.patel@mumbaitech.in',
-    description: 'Consignee (Mumbai): Shipment Copilot, Live Parcel Tracking (P-10291, P-10292)',
-    assigned_entity_id: 'CUST-IND-902',
-    assigned_entity_type: 'CUSTOMER',
-    auth_provider: 'local',
-    meta: { tracked_parcels: ['P-10291', 'P-10292'], city: 'Mumbai' },
-  },
-  {
-    username: 'google_customer_aarav',
-    role: 'CUSTOMER',
-    persona: 'CUSTOMER',
-    full_name: 'Aarav Patel (Google Account)',
-    email: 'aarav.customer@gmail.com',
-    description: 'Google Consumer Consignee: AI Shipment Copilot & Live Tracking Map',
-    assigned_entity_id: 'CUST-IND-902',
-    assigned_entity_type: 'CUSTOMER',
-    auth_provider: 'google',
-    avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80',
-    meta: { tracked_parcels: ['P-10291', 'P-10292'] },
   },
   {
     username: 'executive_sharma',
@@ -367,7 +342,7 @@ export class ApiClient {
         access_token: `mock_google_jwt_${Date.now()}`,
         token_type: 'bearer',
         role: options?.preferred_role || 'CUSTOMER',
-        persona: options?.preferred_role === 'DISPATCHER' ? 'OPERATIONS' : 'CUSTOMER',
+        persona: options?.preferred_role === 'DISPATCHER' ? 'OPERATIONS' : 'DRIVER',
         username: `google_${(options?.email || 'user').split('@')[0]}`,
         full_name: options?.name || 'Google Verified User',
         email: options?.email || 'user@gmail.com',
@@ -508,7 +483,7 @@ export class ApiClient {
       const err = await res.json();
       return { error: err.detail || 'OTP verification failed.' };
     } catch (e: any) {
-      const assignedRole = payload.role || 'CUSTOMER';
+      const assignedRole = payload.role || 'DRIVER';
       const username = `user_${payload.email.split('@')[0]}`;
       const mockToken: TokenResponse = {
         access_token: `mock_otp_jwt_${Date.now()}`,

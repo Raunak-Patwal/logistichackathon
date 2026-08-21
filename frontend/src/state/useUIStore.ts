@@ -8,7 +8,7 @@ import { create } from 'zustand';
 import { EntityType, DomainEvent } from '../domain/uleo';
 import { useWorldModelStore } from './useWorldModelStore';
 
-export type PersonaMode = 'OPERATIONS' | 'CUSTOMER' | 'DRIVER' | 'EXECUTIVE';
+export type PersonaMode = 'OPERATIONS' | 'DRIVER' | 'EXECUTIVE';
 
 export type PrimaryView =
   | 'WORLD'

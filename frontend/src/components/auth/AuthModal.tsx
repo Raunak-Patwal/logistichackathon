@@ -51,7 +51,7 @@ export const AuthModal: React.FC = () => {
   const [regEmail, setRegEmail] = useState('');
   const [regPassword, setRegPassword] = useState('');
   const [regConfirmPassword, setRegConfirmPassword] = useState('');
-  const [regRole, setRegRole] = useState<UserRole>('CUSTOMER');
+  const [regRole, setRegRole] = useState<UserRole>('DRIVER');
   const [regSuccessUser, setRegSuccessUser] = useState<AuthUser | null>(null);
 
   // Change Password State
@@ -492,13 +492,6 @@ export const AuthModal: React.FC = () => {
       email: 'rajesh.driver@gmail.com',
       role: 'DRIVER',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
-    },
-    {
-      id: 'google_customer_aarav',
-      name: 'Aarav Patel',
-      email: 'aarav.customer@gmail.com',
-      role: 'CUSTOMER',
-      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80',
     },
     {
       id: 'google_executive_sharma',
