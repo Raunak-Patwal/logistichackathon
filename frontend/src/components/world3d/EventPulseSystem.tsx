@@ -40,8 +40,8 @@ export const EventPulseSystem: React.FC = () => {
 
   useFrame(({ clock }) => {
     if (ringMeshRef.current && activePulse) {
-      const t = clock.getElapsedTime() * 3;
-      const scale = 1 + (t % 2) * 2.5;
+      const t = clock.getElapsedTime() * 0.5;
+      const scale = 0.75 + (t % 2) * 0.5;
       ringMeshRef.current.scale.set(scale, scale, 1);
 
       const mat = ringMeshRef.current.material as THREE.MeshBasicMaterial;

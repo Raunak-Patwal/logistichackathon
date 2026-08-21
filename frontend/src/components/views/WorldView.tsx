@@ -10,7 +10,7 @@ import { useWorldModelStore } from '../../state/useWorldModelStore';
 
 export const WorldView: React.FC = () => {
   const selectEntity = useUIStore((s) => s.selectEntity);
-  const setCameraMode = useUIStore((s) => s.setCameraMode);
+  const resetOverview = useUIStore((s) => s.resetOverview);
   const triggerSignatureReconstruction = useUIStore((s) => s.triggerSignatureReconstruction);
   const isReplayingSignature = useUIStore((s) => s.isReplayingSignature);
 
@@ -53,7 +53,7 @@ export const WorldView: React.FC = () => {
 
         <button
           className="cyber-btn"
-          onClick={() => setCameraMode('NETWORK_OVERVIEW')}
+          onClick={() => resetOverview()}
           style={{ borderRadius: '9999px', padding: '6px 12px', fontSize: '0.72rem' }}
         >
           <Compass size={12} color="#00f0ff" />

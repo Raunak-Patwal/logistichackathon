@@ -25,6 +25,7 @@ import {
   INITIAL_INCIDENTS,
 } from '../domain/mockData';
 import { DomainEvent } from '../domain/uleo';
+import { getRoutePositionAndTangent } from '../utils/routeUtils';
 
 interface WorldModelState {
   warehouses: WarehouseEntity[];
@@ -267,13 +268,8 @@ export const useWorldModelStore = create<WorldModelState>((set, get) => ({
         let newPos = truck.position;
         const pts = route?.path_points || route?.waypoints;
         if (pts && pts.length >= 2) {
-          const start = pts[0];
-          const end = pts[pts.length - 1];
-          newPos = [
-            start[0] + (end[0] - start[0]) * newProgress,
-            start[1] + (end[1] - start[1]) * newProgress + Math.sin(newProgress * Math.PI) * 0.4,
-            start[2] + (end[2] - start[2]) * newProgress,
-          ];
+          const { position } = getRoutePositionAndTangent(pts, newProgress);
+          newPos = position;
         }
 
         return {

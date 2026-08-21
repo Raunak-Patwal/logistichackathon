@@ -85,19 +85,39 @@ export const WarehouseNode: React.FC<WarehouseNodeProps> = ({ warehouse }) => {
         </mesh>
       )}
 
-      {/* Main Architectural Hub Block */}
+      {/* Main Architectural Hub Block with Physical Clearcoat */}
       <mesh position={[0, 0.75, 0]}>
         <boxGeometry args={[2.0, 1.3, 1.7]} />
-        <meshStandardMaterial
-          color={isHighlighted ? '#111d38' : '#080e1c'}
+        <meshPhysicalMaterial
+          color={isHighlighted ? '#112244' : '#0a1428'}
           emissive={statusColor}
-          emissiveIntensity={isDimmed ? 0.02 : isSelected ? 0.55 : isHighlighted ? 0.35 : hovered ? 0.3 : 0.12}
-          roughness={0.2}
-          metalness={0.88}
+          emissiveIntensity={isDimmed ? 0.02 : isSelected ? 0.65 : isHighlighted ? 0.45 : hovered ? 0.35 : 0.18}
+          roughness={0.25}
+          metalness={0.85}
+          clearcoat={0.6}
+          clearcoatRoughness={0.1}
           transparent={isDimmed}
           opacity={isDimmed ? 0.2 : 1}
         />
       </mesh>
+
+      {/* Frosted Translucent Cyber Glass Windows */}
+      {!isDimmed && (
+        <mesh position={[0, 0.8, 0.86]}>
+          <planeGeometry args={[1.8, 0.4]} />
+          <meshPhysicalMaterial
+            color={statusColor}
+            emissive={statusColor}
+            emissiveIntensity={0.4}
+            transmission={0.9}
+            roughness={0.15}
+            thickness={0.5}
+            ior={1.4}
+            transparent
+            opacity={0.85}
+          />
+        </mesh>
+      )}
 
       {/* Loading Dock Bays with Status LEDs */}
       <group position={[0, 0.25, 0.9]}>

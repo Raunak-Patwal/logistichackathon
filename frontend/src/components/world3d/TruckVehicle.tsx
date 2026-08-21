@@ -81,15 +81,17 @@ export const TruckVehicle: React.FC<TruckVehicleProps> = ({ truck }) => {
         />
       </mesh>
 
-      {/* Aerodynamic Cyber Freight Container */}
+      {/* Aerodynamic Cyber Freight Container with Clearcoat */}
       <mesh position={[0, 0.52, -0.25]}>
         <boxGeometry args={[0.65, 0.6, 1.0]} />
-        <meshStandardMaterial
-          color={isHighlighted ? '#0b2347' : '#0a1426'}
+        <meshPhysicalMaterial
+          color={isHighlighted ? '#132d5e' : '#0a1426'}
           emissive={statusColor}
-          emissiveIntensity={isDimmed ? 0.01 : isSelected ? 0.6 : isHighlighted ? 0.4 : hovered ? 0.3 : 0.1}
+          emissiveIntensity={isDimmed ? 0.01 : isSelected ? 0.75 : isHighlighted ? 0.5 : hovered ? 0.4 : 0.2}
           roughness={0.2}
-          metalness={0.85}
+          metalness={0.88}
+          clearcoat={0.6}
+          clearcoatRoughness={0.15}
           transparent={isDimmed}
           opacity={isDimmed ? 0.2 : 1}
         />
@@ -98,10 +100,12 @@ export const TruckVehicle: React.FC<TruckVehicleProps> = ({ truck }) => {
       {/* Driver Cab */}
       <mesh position={[0, 0.44, 0.5]}>
         <boxGeometry args={[0.6, 0.48, 0.42]} />
-        <meshStandardMaterial
+        <meshPhysicalMaterial
           color="#1e293b"
           metalness={0.92}
           roughness={0.15}
+          clearcoat={0.7}
+          clearcoatRoughness={0.1}
           transparent={isDimmed}
           opacity={isDimmed ? 0.25 : 1}
         />

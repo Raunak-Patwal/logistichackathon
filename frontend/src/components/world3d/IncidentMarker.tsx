@@ -22,13 +22,13 @@ export const IncidentMarker: React.FC<IncidentMarkerProps> = ({ incident, positi
 
   // Dual pulse animation
   useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
+    const t = clock.getElapsedTime() * 0.25;
     if (ringRef.current && !isResolved) {
-      const scale = 1 + (t * 1.8) % 1.6;
+      const scale = 0.5 + (t * 0.5) % 0.4;
       ringRef.current.scale.set(scale, scale, 1);
     }
     if (ring2Ref.current && !isResolved) {
-      const scale2 = 1 + ((t + 0.5) * 1.8) % 1.6;
+      const scale2 = 0.5 + ((t + 0.5) * 2) % 0.4;
       ring2Ref.current.scale.set(scale2, scale2, 1);
     }
   });
@@ -66,19 +66,26 @@ export const IncidentMarker: React.FC<IncidentMarkerProps> = ({ incident, positi
         />
       </mesh>
 
-      {/* High-Tech Cyber Warning Tag */}
-      <Html position={[0, 6.0, 0]} center distanceFactor={22} style={{ pointerEvents: 'none' }}>
+      {/* High-Tech Cyber Warning Tag (Positioned highest at Y=7.2 to avoid card overlaps) */}
+      <Html
+        position={[0, 7.2, 0]}
+        center
+        distanceFactor={28}
+        zIndexRange={[220, 0]}
+        style={{ pointerEvents: 'auto' }}
+      >
         <div
+          className="hud-incident-tag"
           style={{
             background: isResolved ? 'rgba(16, 185, 129, 0.95)' : 'rgba(255, 51, 102, 0.95)',
             color: '#ffffff',
             borderRadius: '6px',
-            padding: '4px 10px',
-            fontFamily: 'Rajdhani, monospace',
-            fontSize: '11px',
+            padding: '5px 12px',
+            fontFamily: 'Rajdhani, sans-serif',
+            fontSize: '12px',
             fontWeight: 700,
             whiteSpace: 'nowrap',
-            boxShadow: isResolved ? '0 0 20px rgba(16, 185, 129, 0.8)' : '0 0 25px rgba(255, 51, 102, 0.85)',
+            boxShadow: isResolved ? '0 0 20px rgba(16, 185, 129, 0.8)' : '0 0 25px rgba(255, 51, 102, 0.9)',
             display: 'flex',
             alignItems: 'center',
             gap: '6px',
@@ -87,7 +94,7 @@ export const IncidentMarker: React.FC<IncidentMarkerProps> = ({ incident, positi
           }}
         >
           <span>{isResolved ? '✓' : '⚠'} {incident.id}</span>
-          <span style={{ fontSize: '10px', opacity: 0.95, fontFamily: 'JetBrains Mono, monospace' }}>
+          <span style={{ fontSize: '11px', opacity: 0.95, fontFamily: 'JetBrains Mono, monospace' }}>
             {incidentTitle} {isResolved && '(RESOLVED)'}
           </span>
         </div>

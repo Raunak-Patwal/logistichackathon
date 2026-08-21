@@ -21,6 +21,8 @@ export type PrimaryView =
   | 'PHASES'
   | 'ARCHITECTURE';
 
+export type MapMode = '3D' | '2D';
+
 export type CameraFocusMode =
   | 'NETWORK_OVERVIEW'
   | 'REGION_FOCUS'
@@ -34,12 +36,14 @@ export type CameraFocusMode =
 interface UIState {
   activePersona: PersonaMode;
   activeView: PrimaryView;
+  mapMode: MapMode;
   selectedEntityType: EntityType | null;
   selectedEntityId: string | null;
   highlightedRouteId: string | null;
   highlightedEntityIds: string[]; // Connected entities in the relational chain
   cameraMode: CameraFocusMode;
   cameraTarget: [number, number, number];
+  cameraNonce: number;
   inspectorOpen: boolean;
   eventInjectorOpen: boolean;
   scenarioModalOpen: boolean;
@@ -51,6 +55,9 @@ interface UIState {
   // Actions
   setActivePersona: (persona: PersonaMode) => void;
   setActiveView: (view: PrimaryView) => void;
+  setMapMode: (mode: MapMode) => void;
+  toggleMapMode: () => void;
+  resetOverview: () => void;
   selectEntity: (type: EntityType | null, id: string | null, position?: [number, number, number]) => void;
   clearSelection: () => void;
   setCameraMode: (mode: CameraFocusMode, target?: [number, number, number]) => void;
@@ -67,12 +74,14 @@ interface UIState {
 export const useUIStore = create<UIState>((set, get) => ({
   activePersona: 'OPERATIONS',
   activeView: 'WORLD',
+  mapMode: '3D',
   selectedEntityType: null,
   selectedEntityId: null,
   highlightedRouteId: null,
   highlightedEntityIds: [],
   cameraMode: 'NETWORK_OVERVIEW',
   cameraTarget: [0, 0, 0],
+  cameraNonce: 0,
   inspectorOpen: false,
   eventInjectorOpen: false,
   scenarioModalOpen: false,
@@ -83,6 +92,19 @@ export const useUIStore = create<UIState>((set, get) => ({
 
   setActivePersona: (persona) => set({ activePersona: persona }),
   setActiveView: (view) => set({ activeView: view }),
+  setMapMode: (mapMode) => set({ mapMode }),
+  toggleMapMode: () => set((s) => ({ mapMode: s.mapMode === '3D' ? '2D' : '3D' })),
+  resetOverview: () =>
+    set((s) => ({
+      cameraMode: 'NETWORK_OVERVIEW',
+      cameraTarget: [0, 0, 0],
+      selectedEntityType: null,
+      selectedEntityId: null,
+      highlightedRouteId: null,
+      highlightedEntityIds: [],
+      inspectorOpen: false,
+      cameraNonce: s.cameraNonce + 1,
+    })),
   setSystemDiagnosticsModalOpen: (open) => set({ systemDiagnosticsModalOpen: open }),
 
   selectEntity: (type, id, position) => {
@@ -92,8 +114,6 @@ export const useUIStore = create<UIState>((set, get) => ({
         selectedEntityId: null,
         highlightedRouteId: null,
         highlightedEntityIds: [],
-        cameraMode: 'NETWORK_OVERVIEW',
-        cameraTarget: [0, 0, 0],
         inspectorOpen: false,
       });
       return;
@@ -170,15 +190,16 @@ export const useUIStore = create<UIState>((set, get) => ({
     else if (type === 'AIRPORT') mode = 'REGION_FOCUS';
     else if (type === 'INCIDENT') mode = 'INCIDENT_FOCUS';
 
-    set({
+    set((state) => ({
       selectedEntityType: type,
       selectedEntityId: id,
       highlightedEntityIds: relatedIds,
       highlightedRouteId: routeId,
       cameraMode: mode,
       cameraTarget: targetPos,
+      cameraNonce: state.cameraNonce + 1,
       inspectorOpen: true,
-    });
+    }));
   },
 
   clearSelection: () =>
@@ -187,16 +208,15 @@ export const useUIStore = create<UIState>((set, get) => ({
       selectedEntityId: null,
       highlightedRouteId: null,
       highlightedEntityIds: [],
-      cameraMode: 'NETWORK_OVERVIEW',
-      cameraTarget: [0, 0, 0],
       inspectorOpen: false,
     }),
 
   setCameraMode: (mode, target) =>
-    set({
+    set((state) => ({
       cameraMode: mode,
       cameraTarget: target || [0, 0, 0],
-    }),
+      cameraNonce: state.cameraNonce + 1,
+    })),
 
   setInspectorOpen: (inspectorOpen) => set({ inspectorOpen }),
   setEventInjectorOpen: (eventInjectorOpen) => set({ eventInjectorOpen }),
