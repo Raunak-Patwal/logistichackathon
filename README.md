@@ -115,12 +115,12 @@ To demonstrate the full 6-phase intelligence lifecycle:
 
 ## 🧪 Automated Testing
 
-Run the full pytest suite (Unit, Integration, API, Resilience, and E2E):
+Run the full pytest suite (Unit, Integration, API, Trained ML Models, Resilience, and E2E):
 ```bash
 pytest backend -v
 ```
 
-All 32 test cases pass out of the box with 100% success rate across all domains, RAG vector searches, JWT authentications, circuit breakers, and rate limiters.
+All 39 test cases pass out of the box with 100% success rate across all domains, Scikit-Learn & XGBoost ML pipelines, RAG vector searches, JWT authentications, circuit breakers, and rate limiters.
 
 ---
 

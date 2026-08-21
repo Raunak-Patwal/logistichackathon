@@ -12,6 +12,8 @@ export type PersonaMode = 'OPERATIONS' | 'CUSTOMER' | 'DRIVER' | 'EXECUTIVE';
 
 export type PrimaryView =
   | 'WORLD'
+  | 'USP_COMMAND'
+  | 'SST_GNN'
   | 'EVENTS'
   | 'ENTITIES'
   | 'TIMELINE'

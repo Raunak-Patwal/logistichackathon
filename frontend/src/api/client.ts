@@ -933,6 +933,147 @@ export class ApiClient {
     } catch {}
     return null;
   }
+
+  // =========================================================================
+  // TRAINED ML MODELS (XGBOOST, DEMAND, VEHICLE ANOMALY & FAILURE)
+  // =========================================================================
+  public async predictTrainedEta(payload: {
+    delivery_partner?: string;
+    package_type?: string;
+    vehicle_type?: string;
+    delivery_mode?: string;
+    region?: string;
+    weather_condition?: string;
+    distance_km: number;
+    package_weight_kg: number;
+    expected_time_hours: number;
+  }): Promise<any> {
+    try {
+      const res = await fetch(`${BACKEND_BASE_URL}/ml/predict-eta`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return await res.json();
+    } catch {}
+    return null;
+  }
+
+  public async fetchTrainedCategories(): Promise<any> {
+    try {
+      const res = await fetch(`${BACKEND_BASE_URL}/ml/categories`);
+      if (res.ok) return await res.json();
+    } catch {}
+    return null;
+  }
+
+  public async forecastTrainedDemand(payload: {
+    hub_code?: string;
+    day_of_week?: number;
+    festival_surge_multiplier?: number;
+    inbound_air_cargo_tons?: number;
+    active_trucks_count?: number;
+  }): Promise<any> {
+    try {
+      const res = await fetch(`${BACKEND_BASE_URL}/ml/demand-forecast`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return await res.json();
+    } catch {}
+    return null;
+  }
+
+  public async checkVehicleAnomaly(payload: {
+    truck_id: string;
+    speed_kmh: number;
+    engine_rpm: number;
+    coolant_temp_celsius: number;
+    fuel_consumption_l_hr: number;
+    vibration_index_g: number;
+  }): Promise<any> {
+    try {
+      const res = await fetch(`${BACKEND_BASE_URL}/ml/vehicle-anomaly`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return await res.json();
+    } catch {}
+    return null;
+  }
+
+  public async predictVehicleFailure(payload: {
+    truck_id: string;
+    odometer_km: number;
+    days_since_last_service: number;
+    brake_wear_percent: number;
+    oil_pressure_psi: number;
+    battery_voltage_volts: number;
+  }): Promise<any> {
+    try {
+      const res = await fetch(`${BACKEND_BASE_URL}/ml/vehicle-failure`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return await res.json();
+    } catch {}
+    return null;
+  }
+
+  public async predictComprehensiveLogistics(payload: {
+    origin_hub: string;
+    destination_hub: string;
+    distance_km: number;
+    cargo_weight_kg: number;
+    driver_fatigue_shift_hrs: number;
+    route_congestion_index: number;
+  }): Promise<any> {
+    try {
+      const res = await fetch(`${BACKEND_BASE_URL}/ml/comprehensive-predict`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return await res.json();
+    } catch {}
+    return null;
+  }
+
+  public async fetchModelsStatus(): Promise<any> {
+    try {
+      const res = await fetch(`${BACKEND_BASE_URL}/ml/models-status`);
+      if (res.ok) return await res.json();
+    } catch {}
+    return null;
+  }
+
+  public async fetchSSTGNNForecast(payload: {
+    incident_hub_id?: string;
+    incident_severity?: number;
+    congested_corridor?: string;
+  }): Promise<any> {
+    try {
+      const res = await fetch(`${BACKEND_BASE_URL}/ml/sst-gnn/forecast`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return await res.json();
+    } catch {}
+    return null;
+  }
+
+  public async fetchSSTGNNTopology(): Promise<any> {
+    try {
+      const res = await fetch(`${BACKEND_BASE_URL}/ml/sst-gnn/topology`);
+      if (res.ok) return await res.json();
+    } catch {}
+    return null;
+  }
 }
 
 export const apiClient = new ApiClient();
+

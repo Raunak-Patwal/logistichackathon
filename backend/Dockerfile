@@ -8,6 +8,7 @@ WORKDIR /app
 # Install system dependencies required for building Python packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
+    g++ \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
@@ -37,8 +38,9 @@ ENV PYTHONPATH=/app
 RUN useradd -m -r appuser && chown -R appuser /app
 USER appuser
 
-# Copy the actual application code and scripts
+# Copy application code, ML models, and startup scripts
 COPY --chown=appuser:appuser src/ ./src/
+COPY --chown=appuser:appuser models/ ./models/
 COPY --chown=appuser:appuser scripts/ ./scripts/
 
 # Ensure entrypoint script has Unix line endings and is executable

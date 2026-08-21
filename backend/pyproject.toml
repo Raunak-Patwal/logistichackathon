@@ -28,6 +28,11 @@ dependencies = [
     "passlib[bcrypt]>=1.7.4",
     "bcrypt>=4.0.0",
     "python-multipart>=0.0.9",
+    "pandas>=2.0.0",
+    "scikit-learn>=1.6.0",
+    "xgboost>=3.0.0",
+    "joblib>=1.4.0",
+    "numpy>=1.26.0",
 ]
 
 [project.optional-dependencies]

@@ -119,8 +119,38 @@ const VISION_SAMPLES = [
 ];
 
 export const UleoStudioView: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'ULEO' | 'VISION_CNN' | 'DEMAND_MLP' | 'COLD_CHAIN' | 'FUEL_EMISSION' | 'REGISTRY'>('ULEO');
+  const [activeTab, setActiveTab] = useState<'ULEO' | 'ETA_XGBOOST' | 'FLEET_AI' | 'VISION_CNN' | 'DEMAND_MLP' | 'COLD_CHAIN' | 'FUEL_EMISSION' | 'REGISTRY'>('ETA_XGBOOST');
   
+  // XGBoost Trained Model State
+  const [etaPartner, setEtaPartner] = useState('Delhivery');
+  const [etaPkgType, setEtaPkgType] = useState('Standard');
+  const [etaVehicleType, setEtaVehicleType] = useState('Tata Ace (1.5T)');
+  const [etaDeliveryMode, setEtaDeliveryMode] = useState('Standard');
+  const [etaRegion, setEtaRegion] = useState('North (Delhi NCR)');
+  const [etaWeather, setEtaWeather] = useState('Clear');
+  const [etaDistance, setEtaDistance] = useState(145.0);
+  const [etaWeight, setEtaWeight] = useState(18.5);
+  const [etaExpectedHrs, setEtaExpectedHrs] = useState(4.0);
+  const [etaResult, setEtaResult] = useState<any | null>(null);
+  const [isEtaPredicting, setIsEtaPredicting] = useState(false);
+  const [availableCategories, setAvailableCategories] = useState<any | null>(null);
+
+  // Fleet Telemetry Anomaly & Failure State
+  const [anomalySpeed, setAnomalySpeed] = useState(68.0);
+  const [anomalyRpm, setAnomalyRpm] = useState(2200.0);
+  const [anomalyCoolant, setAnomalyCoolant] = useState(91.0);
+  const [anomalyVibration, setAnomalyVibration] = useState(0.35);
+  const [anomalyResult, setAnomalyResult] = useState<any | null>(null);
+  const [isAnomalyChecking, setIsAnomalyChecking] = useState(false);
+
+  const [failureOdo, setFailureOdo] = useState(145000.0);
+  const [failureDaysService, setFailureDaysService] = useState(42);
+  const [failureBrakeWear, setFailureBrakeWear] = useState(65.0);
+  const [failureOilPsi, setFailureOilPsi] = useState(38.0);
+  const [failureVolts, setFailureVolts] = useState(12.4);
+  const [failureResult, setFailureResult] = useState<any | null>(null);
+  const [isFailurePredicting, setIsFailurePredicting] = useState(false);
+
   // ULEO State
   const [selectedSample, setSelectedSample] = useState(SAMPLE_RAW_INPUTS[0]);
   const [translationResult, setTranslationResult] = useState<any | null>(null);
@@ -152,6 +182,73 @@ export const UleoStudioView: React.FC = () => {
 
   // Model Registry State
   const [manifestData, setManifestData] = useState<any | null>(null);
+
+  useEffect(() => {
+    apiClient.fetchTrainedCategories().then((res) => {
+      if (res?.categories) {
+        setAvailableCategories(res.categories);
+      }
+    });
+    // Run initial prediction
+    handleRunXGBoostPrediction();
+  }, []);
+
+  const handleRunXGBoostPrediction = async () => {
+    setIsEtaPredicting(true);
+    try {
+      const res = await apiClient.predictTrainedEta({
+        delivery_partner: etaPartner,
+        package_type: etaPkgType,
+        vehicle_type: etaVehicleType,
+        delivery_mode: etaDeliveryMode,
+        region: etaRegion,
+        weather_condition: etaWeather,
+        distance_km: etaDistance,
+        package_weight_kg: etaWeight,
+        expected_time_hours: etaExpectedHrs,
+      });
+      setEtaResult(res);
+    } catch {}
+    finally {
+      setIsEtaPredicting(false);
+    }
+  };
+
+  const handleRunAnomalyCheck = async () => {
+    setIsAnomalyChecking(true);
+    try {
+      const res = await apiClient.checkVehicleAnomaly({
+        truck_id: 'TRK-901',
+        speed_kmh: anomalySpeed,
+        engine_rpm: anomalyRpm,
+        coolant_temp_celsius: anomalyCoolant,
+        fuel_consumption_l_hr: 24.5,
+        vibration_index_g: anomalyVibration,
+      });
+      setAnomalyResult(res);
+    } catch {}
+    finally {
+      setIsAnomalyChecking(false);
+    }
+  };
+
+  const handleRunFailurePredict = async () => {
+    setIsFailurePredicting(true);
+    try {
+      const res = await apiClient.predictVehicleFailure({
+        truck_id: 'TRK-901',
+        odometer_km: failureOdo,
+        days_since_last_service: failureDaysService,
+        brake_wear_percent: failureBrakeWear,
+        oil_pressure_psi: failureOilPsi,
+        battery_voltage_volts: failureVolts,
+      });
+      setFailureResult(res);
+    } catch {}
+    finally {
+      setIsFailurePredicting(false);
+    }
+  };
 
   const handleTranslateAndCommit = () => {
     setIsExecuting(true);
@@ -271,8 +368,10 @@ export const UleoStudioView: React.FC = () => {
         </div>
 
         {/* Tab Switcher */}
-        <div style={{ display: 'flex', gap: '6px', background: 'rgba(4, 7, 17, 0.8)', padding: '4px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)' }}>
+        <div style={{ display: 'flex', gap: '6px', background: 'rgba(4, 7, 17, 0.8)', padding: '4px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)', flexWrap: 'wrap' }}>
           {[
+            { key: 'ETA_XGBOOST', label: 'XGBOOST ETA PREDICTOR', icon: <Zap size={13} /> },
+            { key: 'FLEET_AI', label: 'FLEET TELEMETRY & HEALTH', icon: <Activity size={13} /> },
             { key: 'ULEO', label: 'ULEO STUDIO', icon: <Layers size={13} /> },
             { key: 'VISION_CNN', label: 'CNN OPTICAL AOI', icon: <Eye size={13} /> },
             { key: 'DEMAND_MLP', label: 'DEMAND FORECAST', icon: <BarChart3 size={13} /> },
@@ -305,6 +404,280 @@ export const UleoStudioView: React.FC = () => {
 
       {/* Body Content by Tab */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
+        {/* ================================================================= */}
+        {/* TAB 0: TRAINED XGBOOST DYNAMIC ETA PREDICTOR */}
+        {/* ================================================================= */}
+        {activeTab === 'ETA_XGBOOST' && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '24px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <h3 className="font-display" style={{ fontSize: '1.05rem', color: '#00f0ff', margin: 0 }}>
+                  XGBoost Dynamic ETA Inference Engine
+                </h3>
+                <span className="font-mono text-xs" style={{ color: '#10b981', background: 'rgba(16, 185, 129, 0.15)', padding: '2px 8px', borderRadius: '4px', border: '1px solid #10b981' }}>
+                  MODEL: eta_xgboost_model.joblib
+                </span>
+              </div>
+
+              {/* Input Form Grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <label className="font-mono text-xs" style={{ color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Delivery Partner</label>
+                  <select value={etaPartner} onChange={(e) => setEtaPartner(e.target.value)} className="cyber-input" style={{ width: '100%', padding: '8px', fontSize: '12px' }}>
+                    {(availableCategories?.delivery_partner || ['Delhivery', 'BlueDart', 'DTDC', 'Shadowfax', 'Ecom Express', 'Ekart', 'FedEx']).map((p: string) => (
+                      <option key={p} value={p}>{p}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="font-mono text-xs" style={{ color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Package Type</label>
+                  <select value={etaPkgType} onChange={(e) => setEtaPkgType(e.target.value)} className="cyber-input" style={{ width: '100%', padding: '8px', fontSize: '12px' }}>
+                    {(availableCategories?.package_type || ['Standard', 'Express', 'Fragile', 'Cold Chain', 'Heavy Cargo', 'Medicine', 'Electronics']).map((p: string) => (
+                      <option key={p} value={p}>{p}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="font-mono text-xs" style={{ color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Vehicle Class</label>
+                  <select value={etaVehicleType} onChange={(e) => setEtaVehicleType(e.target.value)} className="cyber-input" style={{ width: '100%', padding: '8px', fontSize: '12px' }}>
+                    {(availableCategories?.vehicle_type || ['Tata Ace (1.5T)', 'Eicher 14ft (4T)', 'BharatBenz 24ft (10T)', 'Volvo Multi-Axle (20T)', 'EV Delivery Van']).map((v: string) => (
+                      <option key={v} value={v}>{v}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="font-mono text-xs" style={{ color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Delivery Mode</label>
+                  <select value={etaDeliveryMode} onChange={(e) => setEtaDeliveryMode(e.target.value)} className="cyber-input" style={{ width: '100%', padding: '8px', fontSize: '12px' }}>
+                    {(availableCategories?.delivery_mode || ['Standard', 'Express', 'Same Day', 'Priority Air', 'Surface Cargo']).map((m: string) => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="font-mono text-xs" style={{ color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Logistics Region</label>
+                  <select value={etaRegion} onChange={(e) => setEtaRegion(e.target.value)} className="cyber-input" style={{ width: '100%', padding: '8px', fontSize: '12px' }}>
+                    {(availableCategories?.region || ['North (Delhi NCR)', 'West (Mumbai/Pune)', 'South (Bengaluru/Chennai)', 'East (Kolkata)', 'Central (Hyderabad/Nagpur)']).map((r: string) => (
+                      <option key={r} value={r}>{r}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="font-mono text-xs" style={{ color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Weather Condition</label>
+                  <select value={etaWeather} onChange={(e) => setEtaWeather(e.target.value)} className="cyber-input" style={{ width: '100%', padding: '8px', fontSize: '12px' }}>
+                    {(availableCategories?.weather_condition || ['Clear', 'Light Rain', 'Heavy Monsoon', 'Dense Fog', 'Severe Heatwave', 'Dust Storm']).map((w: string) => (
+                      <option key={w} value={w}>{w}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Sliders */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span className="font-mono text-xs" style={{ color: '#94a3b8' }}>Distance:</span>
+                    <span className="font-mono text-xs" style={{ color: '#00f0ff', fontWeight: 700 }}>{etaDistance} km</span>
+                  </div>
+                  <input type="range" min="5" max="1500" step="5" value={etaDistance} onChange={(e) => setEtaDistance(parseFloat(e.target.value))} style={{ width: '100%', accentColor: '#00f0ff' }} />
+                </div>
+
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span className="font-mono text-xs" style={{ color: '#94a3b8' }}>Package Weight:</span>
+                    <span className="font-mono text-xs" style={{ color: '#00f0ff', fontWeight: 700 }}>{etaWeight} kg</span>
+                  </div>
+                  <input type="range" min="0.5" max="250" step="0.5" value={etaWeight} onChange={(e) => setEtaWeight(parseFloat(e.target.value))} style={{ width: '100%', accentColor: '#00f0ff' }} />
+                </div>
+
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span className="font-mono text-xs" style={{ color: '#94a3b8' }}>Promised SLA Window:</span>
+                    <span className="font-mono text-xs" style={{ color: '#00f0ff', fontWeight: 700 }}>{etaExpectedHrs} Hours</span>
+                  </div>
+                  <input type="range" min="0.5" max="48" step="0.5" value={etaExpectedHrs} onChange={(e) => setEtaExpectedHrs(parseFloat(e.target.value))} style={{ width: '100%', accentColor: '#00f0ff' }} />
+                </div>
+              </div>
+
+              <button className="cyber-btn" onClick={handleRunXGBoostPrediction} disabled={isEtaPredicting} style={{ padding: '12px', justifyContent: 'center', background: 'linear-gradient(135deg, rgba(0, 240, 255, 0.3) 0%, rgba(2, 132, 199, 0.3) 100%)', borderColor: '#00f0ff', borderRadius: '8px' }}>
+                <Zap size={16} color="#00f0ff" />
+                <span style={{ fontWeight: 700 }}>{isEtaPredicting ? 'RUNNING XGBOOST INFERENCE...' : 'RUN TRAINED XGBOOST ETA PREDICTION'}</span>
+              </button>
+            </div>
+
+            {/* Result Panel */}
+            <div>
+              {etaResult ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ padding: '20px', background: '#040711', border: `1px solid ${etaResult.risk_status === 'ON_TIME' ? '#10b981' : etaResult.risk_status === 'MODERATE_DELAY' ? '#f59e0b' : '#ff3366'}`, borderRadius: '12px', boxShadow: '0 8px 24px rgba(0,0,0,0.6)' }}>
+                    <div className="font-mono text-xs" style={{ color: '#94a3b8' }}>PREDICTED TRANSIT TIME (XGBOOST)</div>
+                    <div className="font-mono" style={{ fontSize: '2.2rem', fontWeight: 800, color: '#f8fafc', margin: '6px 0' }}>
+                      {etaResult.predicted_eta_hours} <span style={{ fontSize: '1.1rem', color: '#94a3b8' }}>Hours</span>
+                    </div>
+                    <div className="font-mono text-sm" style={{ color: '#00f0ff' }}>
+                      ≈ {etaResult.predicted_eta_minutes} Minutes
+                    </div>
+
+                    <div style={{ marginTop: '16px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                      <div style={{ background: 'rgba(255,255,255,0.05)', padding: '6px 10px', borderRadius: '6px' }}>
+                        <span className="font-mono text-xs" style={{ color: '#64748b' }}>SLA Target: </span>
+                        <b className="font-mono text-xs" style={{ color: '#cbd5e1' }}>{etaResult.expected_time_hours} hrs</b>
+                      </div>
+                      <div style={{ background: 'rgba(255,255,255,0.05)', padding: '6px 10px', borderRadius: '6px' }}>
+                        <span className="font-mono text-xs" style={{ color: '#64748b' }}>SLA Variance: </span>
+                        <b className="font-mono text-xs" style={{ color: etaResult.delay_hours > 0 ? '#ff3366' : '#10b981' }}>
+                          {etaResult.delay_hours > 0 ? `+${etaResult.delay_hours}` : etaResult.delay_hours} hrs
+                        </b>
+                      </div>
+                      <div style={{ background: etaResult.risk_status === 'ON_TIME' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)', padding: '6px 10px', borderRadius: '6px' }}>
+                        <b className="font-mono text-xs" style={{ color: etaResult.risk_status === 'ON_TIME' ? '#10b981' : '#ef4444' }}>
+                          {etaResult.risk_status}
+                        </b>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ background: 'rgba(6, 11, 24, 0.9)', padding: '16px', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                    <div className="font-mono text-xs" style={{ color: '#f59e0b', marginBottom: '8px', fontWeight: 600 }}>MODEL PIPELINE DETAILS:</div>
+                    <div className="font-mono text-xs" style={{ color: '#94a3b8' }}>Preprocessor: <b>eta_preprocessor.joblib (ColumnTransformer)</b></div>
+                    <div className="font-mono text-xs" style={{ color: '#94a3b8', marginTop: '4px' }}>Inference Type: <b style={{ color: '#00f0ff' }}>{etaResult.inference_type}</b></div>
+                    <div className="font-mono text-xs" style={{ color: '#94a3b8', marginTop: '4px' }}>Derived Features: <b>distance_per_expected_hour, weight_per_distance, is_express</b></div>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ padding: '30px', textAlign: 'center', color: '#64748b' }}>
+                  Click &apos;RUN TRAINED XGBOOST ETA PREDICTION&apos; to execute model inference.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ================================================================= */}
+        {/* TAB 0.5: FLEET TELEMETRY ANOMALY & FAILURE PREDICTOR */}
+        {/* ================================================================= */}
+        {activeTab === 'FLEET_AI' && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+            {/* Anomaly Section */}
+            <div style={{ background: 'rgba(6, 11, 24, 0.9)', padding: '20px', borderRadius: '12px', border: '1px solid rgba(0, 240, 255, 0.2)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                <h3 className="font-display" style={{ fontSize: '1rem', color: '#00f0ff', margin: 0 }}>Vehicle Anomaly Detection</h3>
+                <span className="font-mono text-xs" style={{ color: '#f59e0b' }}>vehicle_anomaly_model.joblib</span>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span className="font-mono text-xs" style={{ color: '#94a3b8' }}>Speed:</span>
+                    <span className="font-mono text-xs" style={{ color: '#00f0ff' }}>{anomalySpeed} km/h</span>
+                  </div>
+                  <input type="range" min="0" max="130" step="1" value={anomalySpeed} onChange={(e) => setAnomalySpeed(parseFloat(e.target.value))} style={{ width: '100%', accentColor: '#00f0ff' }} />
+                </div>
+
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span className="font-mono text-xs" style={{ color: '#94a3b8' }}>Engine RPM:</span>
+                    <span className="font-mono text-xs" style={{ color: '#00f0ff' }}>{anomalyRpm} RPM</span>
+                  </div>
+                  <input type="range" min="800" max="4200" step="50" value={anomalyRpm} onChange={(e) => setAnomalyRpm(parseFloat(e.target.value))} style={{ width: '100%', accentColor: '#00f0ff' }} />
+                </div>
+
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span className="font-mono text-xs" style={{ color: '#94a3b8' }}>Coolant Temp:</span>
+                    <span className="font-mono text-xs" style={{ color: '#00f0ff' }}>{anomalyCoolant}°C</span>
+                  </div>
+                  <input type="range" min="70" max="130" step="1" value={anomalyCoolant} onChange={(e) => setAnomalyCoolant(parseFloat(e.target.value))} style={{ width: '100%', accentColor: '#00f0ff' }} />
+                </div>
+
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span className="font-mono text-xs" style={{ color: '#94a3b8' }}>Chassis Vibration:</span>
+                    <span className="font-mono text-xs" style={{ color: '#00f0ff' }}>{anomalyVibration}g</span>
+                  </div>
+                  <input type="range" min="0.1" max="2.5" step="0.05" value={anomalyVibration} onChange={(e) => setAnomalyVibration(parseFloat(e.target.value))} style={{ width: '100%', accentColor: '#00f0ff' }} />
+                </div>
+
+                <button className="cyber-btn" onClick={handleRunAnomalyCheck} disabled={isAnomalyChecking} style={{ marginTop: '8px', padding: '10px', justifyContent: 'center', background: 'rgba(0, 240, 255, 0.2)', borderColor: '#00f0ff' }}>
+                  <Activity size={14} color="#00f0ff" />
+                  <span>{isAnomalyChecking ? 'EVALUATING SENSORS...' : 'CHECK TELEMETRY ANOMALY'}</span>
+                </button>
+
+                {anomalyResult && (
+                  <div style={{ marginTop: '10px', padding: '12px', background: '#040711', border: `1px solid ${anomalyResult.is_anomaly ? '#ff3366' : '#10b981'}`, borderRadius: '8px' }}>
+                    <div className="font-mono text-xs" style={{ color: anomalyResult.is_anomaly ? '#ff3366' : '#10b981', fontWeight: 700 }}>
+                      {anomalyResult.is_anomaly ? '⚠️ SENSOR ANOMALY DETECTED' : '✓ TELEMETRY NORMAL'}
+                    </div>
+                    {anomalyResult.anomaly_reason && (
+                      <div className="font-mono text-xs" style={{ color: '#cbd5e1', marginTop: '4px' }}>
+                        {anomalyResult.anomaly_reason}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Failure & Maintenance Section */}
+            <div style={{ background: 'rgba(6, 11, 24, 0.9)', padding: '20px', borderRadius: '12px', border: '1px solid rgba(0, 240, 255, 0.2)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                <h3 className="font-display" style={{ fontSize: '1rem', color: '#00f0ff', margin: 0 }}>Predictive Vehicle Maintenance</h3>
+                <span className="font-mono text-xs" style={{ color: '#a855f7' }}>vehicle_failure_model.joblib</span>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span className="font-mono text-xs" style={{ color: '#94a3b8' }}>Odometer:</span>
+                    <span className="font-mono text-xs" style={{ color: '#00f0ff' }}>{failureOdo.toLocaleString()} km</span>
+                  </div>
+                  <input type="range" min="10000" max="350000" step="5000" value={failureOdo} onChange={(e) => setFailureOdo(parseFloat(e.target.value))} style={{ width: '100%', accentColor: '#00f0ff' }} />
+                </div>
+
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span className="font-mono text-xs" style={{ color: '#94a3b8' }}>Days Since Last Service:</span>
+                    <span className="font-mono text-xs" style={{ color: '#00f0ff' }}>{failureDaysService} Days</span>
+                  </div>
+                  <input type="range" min="1" max="120" step="1" value={failureDaysService} onChange={(e) => setFailureDaysService(parseInt(e.target.value))} style={{ width: '100%', accentColor: '#00f0ff' }} />
+                </div>
+
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span className="font-mono text-xs" style={{ color: '#94a3b8' }}>Brake Pad Wear:</span>
+                    <span className="font-mono text-xs" style={{ color: '#00f0ff' }}>{failureBrakeWear}%</span>
+                  </div>
+                  <input type="range" min="5" max="98" step="1" value={failureBrakeWear} onChange={(e) => setFailureBrakeWear(parseFloat(e.target.value))} style={{ width: '100%', accentColor: '#00f0ff' }} />
+                </div>
+
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span className="font-mono text-xs" style={{ color: '#94a3b8' }}>Battery Voltage:</span>
+                    <span className="font-mono text-xs" style={{ color: '#00f0ff' }}>{failureVolts}V</span>
+                  </div>
+                  <input type="range" min="10.5" max="14.2" step="0.1" value={failureVolts} onChange={(e) => setFailureVolts(parseFloat(e.target.value))} style={{ width: '100%', accentColor: '#00f0ff' }} />
+                </div>
+
+                <button className="cyber-btn" onClick={handleRunFailurePredict} disabled={isFailurePredicting} style={{ marginTop: '8px', padding: '10px', justifyContent: 'center', background: 'rgba(168, 85, 247, 0.2)', borderColor: '#a855f7' }}>
+                  <ShieldCheck size={14} color="#a855f7" />
+                  <span>{isFailurePredicting ? 'PREDICTING FAILURE PROBABILITY...' : 'PREDICT COMPONENT FAILURE RISK'}</span>
+                </button>
+
+                {failureResult && (
+                  <div style={{ marginTop: '10px', padding: '12px', background: '#040711', border: `1px solid ${failureResult.risk_level === 'HEALTHY' ? '#10b981' : failureResult.risk_level === 'MODERATE' ? '#f59e0b' : '#ff3366'}`, borderRadius: '8px' }}>
+                    <div className="font-mono text-xs" style={{ color: '#94a3b8' }}>Breakdown Probability: <b style={{ color: failureResult.risk_level === 'HEALTHY' ? '#10b981' : '#ff3366', fontSize: '1rem' }}>{(failureResult.failure_probability * 100).toFixed(0)}%</b></div>
+                    <div className="font-mono text-xs" style={{ color: '#cbd5e1', marginTop: '4px' }}>Directive: <b>{failureResult.recommended_action}</b></div>
+                    <div className="font-mono text-xs" style={{ color: '#64748b', marginTop: '2px' }}>Est. Safe Range: {failureResult.estimated_remaining_range_km} km</div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
         {/* ================================================================= */}
         {/* TAB 1: ULEO NORMALIZATION STUDIO */}
         {/* ================================================================= */}

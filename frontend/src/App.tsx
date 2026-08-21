@@ -21,6 +21,8 @@ import { NetworkGraphView } from './components/views/NetworkGraphView';
 import { UleoStudioView } from './components/views/UleoStudioView';
 import { PhaseRoadmapView } from './components/views/PhaseRoadmapView';
 import { ArchitectureView } from './components/views/ArchitectureView';
+import { FourUspsCommandView } from './components/views/FourUspsCommandView';
+import { SstGnnTrafficView } from './components/views/SstGnnTrafficView';
 
 import { CustomerCopilotView } from './components/views/CustomerCopilotView';
 import { DriverCopilotView } from './components/views/DriverCopilotView';
@@ -234,6 +236,8 @@ export const App: React.FC = () => {
               <OperationsCopilotPanel />
             </>
           )}
+          {activeView === 'USP_COMMAND' && <FourUspsCommandView />}
+          {activeView === 'SST_GNN' && <SstGnnTrafficView />}
           {activeView === 'EVENTS' && <EventStreamView />}
           {activeView === 'ENTITIES' && <EntitiesView />}
           {activeView === 'TIMELINE' && <TimelineView />}

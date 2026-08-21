@@ -4,6 +4,8 @@ import {
   Activity,
   Boxes,
   AlertOctagon,
+  Sparkles,
+  Cpu,
   LucideIcon,
 } from 'lucide-react';
 import { useUIStore, PrimaryView } from '../../state/useUIStore';
@@ -13,14 +15,16 @@ interface NavItem {
   id: PrimaryView;
   label: string;
   icon: LucideIcon;
-  badgeType?: 'INCIDENTS' | 'EVENTS';
+  badgeType?: 'INCIDENTS' | 'EVENTS' | 'HOT';
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: 'WORLD', label: '3D World Twin', icon: Globe },
-  { id: 'INCIDENTS', label: 'Incidents & AI Radar', icon: AlertOctagon, badgeType: 'INCIDENTS' },
-  { id: 'ENTITIES', label: 'Hubs & Fleet Tree', icon: Boxes },
-  { id: 'EVENTS', label: 'PostgreSQL Event Log', icon: Activity, badgeType: 'EVENTS' },
+  { id: 'WORLD', label: 'World Twin', icon: Globe },
+  { id: 'USP_COMMAND', label: '⭐ 4 USPs Matrix', icon: Sparkles, badgeType: 'HOT' },
+  { id: 'SST_GNN', label: '🧠 SST-GNN Forecaster', icon: Cpu },
+  { id: 'INCIDENTS', label: 'Incidents Radar', icon: AlertOctagon, badgeType: 'INCIDENTS' },
+  { id: 'ENTITIES', label: 'Fleet Tree', icon: Boxes },
+  { id: 'EVENTS', label: 'Event Log', icon: Activity, badgeType: 'EVENTS' },
 ];
 
 export const NavRail: React.FC = () => {

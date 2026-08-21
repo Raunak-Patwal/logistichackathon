@@ -89,6 +89,30 @@ It bridges the gap between raw IoT/WMS telemetry, transactional consistency, rea
 
 ---
 
+### Phase 2.5: Trained ML Ensemble & Predictive Maintenance Engines (.joblib)
+* **XGBoost ETA Predictor & ColumnTransformer Preprocessor** ([`src/application/ai/trained_models_service.py`](file:///c:/Users/Lenovo/Desktop/logistichackathon/backend/src/application/ai/trained_models_service.py)):
+  - Loads `eta_xgboost_model.joblib` and `eta_preprocessor.joblib`.
+  - Ingests categorical features (`delivery_partner`, `package_type`, `vehicle_type`, `delivery_mode`, `region`, `weather_condition`) and continuous features (`distance_km`, `package_weight_kg`, `expected_time_hours`).
+  - Synthesizes engineered interaction features (`distance_per_expected_hour`, `weight_per_distance`, `is_express`) to predict real-time transit duration with SLA delay variance scoring.
+* **Freight Demand & Congestion Forecaster** (`demand_forecasting_model.joblib`):
+  - Predicts 24-hour parcel throughput diurnal curves, dock congestion index, and required warehouse dock capacity across major hubs (`DEL-W12`, `BOM-W04`, `BLR-W08`).
+* **Real-Time Vehicle Anomaly Detector** (`vehicle_anomaly_model.joblib`):
+  - Analyzes high-frequency speed, engine RPM, coolant temperature, fuel consumption, and chassis vibration accelerometer signals to flag mechanical deviations.
+* **Predictive Vehicle Failure & Maintenance Scorer** (`vehicle_failure_model.joblib`):
+  - Evaluates cumulative odometer mileage, days since last depot inspection, brake pad wear %, oil pressure PSI, and battery voltage to predict component breakdown probabilities and safe remaining range.
+* **Comprehensive Multi-Objective Logistics Optimizer** (`comprehensive_logistics_model.joblib`):
+  - Balances multi-corridor transit time, diesel fuel consumption, CO2 carbon footprint, and overall operational efficiency.
+* **Dedicated REST ML Routes** ([`src/api/routes/ml_routes.py`](file:///c:/Users/Lenovo/Desktop/logistichackathon/backend/src/api/routes/ml_routes.py)):
+  - `POST /api/v1/ml/predict-eta`
+  - `GET /api/v1/ml/categories`
+  - `POST /api/v1/ml/demand-forecast`
+  - `POST /api/v1/ml/vehicle-anomaly`
+  - `POST /api/v1/ml/vehicle-failure`
+  - `POST /api/v1/ml/comprehensive-predict`
+  - `GET /api/v1/ml/models-status`
+
+---
+
 ### Phase 3: Decoupled Redis Event Streaming & WebSocket Pipeline
 * **High-Throughput Ingestion Gateway** ([`src/infrastructure/queue/redis_queue.py`](file:///c:/Users/Lenovo/Desktop/logistichackathon/backend/src/infrastructure/queue/redis_queue.py)):
   - Implements Redis Streams (`XADD`) accepting events (`POST /api/v1/events`) and acknowledging with `202 Accepted` in < 2ms.
