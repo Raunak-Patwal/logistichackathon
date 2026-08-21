@@ -95,22 +95,51 @@ export const EventInjectorModal: React.FC = () => {
           </button>
         </div>
 
+        {/* RBAC Security Notice if Unauthorized */}
+        {!apiClient.canInjectEvents() && (
+          <div
+            style={{
+              padding: '10px 14px',
+              borderRadius: '8px',
+              background: 'rgba(245, 158, 11, 0.12)',
+              border: '1px solid rgba(245, 158, 11, 0.4)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              color: '#f59e0b',
+              fontSize: '0.76rem',
+            }}
+          >
+            <ShieldCheck size={18} color="#f59e0b" style={{ flexShrink: 0 }} />
+            <span>
+              <strong>READ-ONLY OPERATIONAL SESSION:</strong> Event injection to PostgreSQL/Redis stream is locked for your current role. Switch to Dispatcher or Admin to inject events.
+            </span>
+          </div>
+        )}
+
         {/* Preset Invariant Test Buttons */}
         <div style={{ display: 'flex', gap: '8px' }}>
           <button
             className="cyber-btn"
+            disabled={!apiClient.canInjectEvents()}
             onClick={() => {
               setEventType('PARCEL_LOADED');
               setEntityId('P-1021');
               setTruckId('T-184');
             }}
-            style={{ flex: 1, fontSize: '0.72rem', justifyContent: 'center' }}
+            style={{
+              flex: 1,
+              fontSize: '0.72rem',
+              justifyContent: 'center',
+              opacity: apiClient.canInjectEvents() ? 1 : 0.5,
+            }}
           >
             VALID: LOAD P-1021 → T-184
           </button>
 
           <button
             className="cyber-btn"
+            disabled={!apiClient.canInjectEvents()}
             onClick={handleTestIllegal}
             style={{
               flex: 1,
@@ -118,6 +147,7 @@ export const EventInjectorModal: React.FC = () => {
               justifyContent: 'center',
               borderColor: '#ff3366',
               color: '#ff3366',
+              opacity: apiClient.canInjectEvents() ? 1 : 0.5,
             }}
             title="Attempts direct CREATED → DELIVERED transition to verify domain invariant rejection"
           >
@@ -131,6 +161,7 @@ export const EventInjectorModal: React.FC = () => {
             <label className="font-mono text-xs" style={{ color: '#00f0ff', fontWeight: 600 }}>EVENT TYPE</label>
             <select
               value={eventType}
+              disabled={!apiClient.canInjectEvents()}
               onChange={(e) => setEventType(e.target.value as any)}
               className="font-mono text-xs"
               style={{
@@ -138,18 +169,17 @@ export const EventInjectorModal: React.FC = () => {
                 padding: '10px',
                 marginTop: '4px',
                 background: 'rgba(8, 14, 28, 0.95)',
-                border: '1px solid rgba(0, 240, 255, 0.3)',
-                color: '#00f0ff',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                color: '#f8fafc',
                 borderRadius: '4px',
                 outline: 'none',
               }}
             >
               <option value="PARCEL_CREATED">PARCEL_CREATED</option>
-              <option value="PARCEL_PACKED">PARCEL_PACKED</option>
               <option value="PARCEL_LOADED">PARCEL_LOADED</option>
-              <option value="TRUCK_DEPARTED">TRUCK_DEPARTED</option>
-              <option value="TRUCK_ARRIVED">TRUCK_ARRIVED</option>
               <option value="PARCEL_DELIVERED">PARCEL_DELIVERED</option>
+              <option value="TRUCK_TELEMETRY_UPDATED">TRUCK_TELEMETRY_UPDATED</option>
+              <option value="SCANNER_FAULT_DETECTED">SCANNER_FAULT_DETECTED</option>
             </select>
           </div>
 
@@ -158,6 +188,7 @@ export const EventInjectorModal: React.FC = () => {
               <label className="font-mono text-xs" style={{ color: '#94a3b8' }}>ENTITY ID</label>
               <input
                 type="text"
+                disabled={!apiClient.canInjectEvents()}
                 value={entityId}
                 onChange={(e) => setEntityId(e.target.value)}
                 className="font-mono text-xs"
@@ -174,9 +205,10 @@ export const EventInjectorModal: React.FC = () => {
               />
             </div>
             <div>
-              <label className="font-mono text-xs" style={{ color: '#94a3b8' }}>TRUCK ID (IF APPLICABLE)</label>
+              <label className="font-mono text-xs" style={{ color: '#94a3b8' }}>TRUCK BINDING</label>
               <input
                 type="text"
+                disabled={!apiClient.canInjectEvents()}
                 value={truckId}
                 onChange={(e) => setTruckId(e.target.value)}
                 className="font-mono text-xs"
@@ -198,6 +230,7 @@ export const EventInjectorModal: React.FC = () => {
             <label className="font-mono text-xs" style={{ color: '#94a3b8' }}>EVENT SOURCE</label>
             <input
               type="text"
+              disabled={!apiClient.canInjectEvents()}
               value={source}
               onChange={(e) => setSource(e.target.value)}
               className="font-mono text-xs"
@@ -219,17 +252,26 @@ export const EventInjectorModal: React.FC = () => {
         <button
           className="cyber-btn"
           onClick={handleEmit}
-          disabled={loading}
+          disabled={loading || !apiClient.canInjectEvents()}
           style={{
             padding: '12px',
             fontWeight: 700,
             justifyContent: 'center',
-            background: 'linear-gradient(135deg, #00f0ff 0%, #0284c7 100%)',
-            color: '#040711',
+            background: apiClient.canInjectEvents()
+              ? 'linear-gradient(135deg, #00f0ff 0%, #0284c7 100%)'
+              : 'rgba(255, 255, 255, 0.08)',
+            color: apiClient.canInjectEvents() ? '#040711' : '#94a3b8',
+            cursor: apiClient.canInjectEvents() ? 'pointer' : 'not-allowed',
           }}
         >
           <Send size={15} />
-          <span>{loading ? 'INGESTING TO STREAM...' : 'SUBMIT TO INGESTION PIPELINE'}</span>
+          <span>
+            {!apiClient.canInjectEvents()
+              ? '🔒 INGESTION LOCKED (DISPATCHER/ADMIN REQUIRED)'
+              : loading
+              ? 'INGESTING TO STREAM...'
+              : 'SUBMIT TO INGESTION PIPELINE'}
+          </span>
         </button>
 
         {/* Output Feedback */}

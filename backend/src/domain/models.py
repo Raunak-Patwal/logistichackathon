@@ -16,10 +16,16 @@ from src.domain.reasoning.models import (
 )
 from src.domain.auth_models import (
     UserRole,
+    PersonaMode,
+    ROLE_TO_PERSONA,
+    PERMISSIONS_BY_ROLE,
     Token,
     TokenPayload,
     User,
     UserInDB,
+    LoginRequest,
+    RoleSwitchRequest,
+    UserPublicProfile,
 )
 
 __all__ = [
@@ -32,9 +38,15 @@ __all__ = [
     "RecoveryOption",
     "ReasoningResult",
     "UserRole",
+    "PersonaMode",
+    "ROLE_TO_PERSONA",
+    "PERMISSIONS_BY_ROLE",
     "Token",
     "TokenPayload",
     "User",
     "UserInDB",
+    "LoginRequest",
+    "RoleSwitchRequest",
+    "UserPublicProfile",
 ]
 

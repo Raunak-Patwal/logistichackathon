@@ -1,0 +1,68 @@
+{
+  "manifest_version": "3.1.0",
+  "description": "Enterprise binary serialized ML models trained with Scikit-Learn",
+  "models": {
+    "eta_regressor": {
+      "framework": "Scikit-Learn (RandomForestRegressor)",
+      "artifact_file": "eta_random_forest.joblib",
+      "metrics": {
+        "mae_mins": 23.39,
+        "r2_score": 0.9994,
+        "feature_importances": {
+          "distance_km": 0.7298,
+          "cargo_weight_kg": 0.0002,
+          "congestion_factor": 0.2698,
+          "shift_hours": 0.0001,
+          "weather_factor": 0.0002
+        },
+        "n_estimators": 60
+      }
+    },
+    "incident_classifier": {
+      "framework": "Scikit-Learn (GradientBoostingClassifier)",
+      "artifact_file": "incident_gb_classifier.joblib",
+      "metrics": {
+        "accuracy_pct": 98.12,
+        "classes": [
+          "LOW",
+          "MEDIUM",
+          "HIGH",
+          "CRITICAL"
+        ],
+        "n_estimators": 40
+      }
+    },
+    "vision_defect_classifier": {
+      "framework": "Scikit-Learn (RandomForestClassifier)",
+      "artifact_file": "vision_rf_classifier.joblib",
+      "metrics": {
+        "accuracy_pct": 99.6,
+        "classes": [
+          "OPTIMAL_LABEL_CLEAN",
+          "TORN_OR_BLURRED_BARCODE",
+          "CRUSHED_BOX_DEFECT",
+          "THERMAL_FROST_OBSCURED"
+        ],
+        "n_estimators": 50
+      }
+    },
+    "cold_chain_thermal_predictor": {
+      "framework": "Scikit-Learn (RandomForestRegressor)",
+      "artifact_file": "cold_chain_rf_regressor.joblib",
+      "metrics": {
+        "mae_celsius": 0.343,
+        "r2_score": 0.9447,
+        "n_estimators": 45
+      }
+    },
+    "fuel_and_carbon_emission_model": {
+      "framework": "Scikit-Learn (RandomForestRegressor)",
+      "artifact_file": "fuel_emission_regressor.joblib",
+      "metrics": {
+        "mae_litres_per_100km": 0.86,
+        "r2_score": 0.9485,
+        "n_estimators": 45
+      }
+    }
+  }
+}

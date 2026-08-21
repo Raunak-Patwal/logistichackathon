@@ -24,7 +24,28 @@ export const CustomerCopilotView: React.FC = () => {
   const warehouses = useWorldModelStore((s) => s.warehouses);
   const incidents = useWorldModelStore((s) => s.incidents);
 
-  const [selectedParcelId, setSelectedParcelId] = useState<string>(parcels[0]?.id || 'P-1021');
+  const [selectedParcelId, setSelectedParcelId] = useState<string>(() => {
+    const user = apiClient.getStoredUser();
+    const tracked = user?.meta?.tracked_parcels;
+    if (user?.role === 'CUSTOMER' && Array.isArray(tracked) && tracked.length > 0) {
+      return tracked[0];
+    }
+    return parcels[0]?.id || 'P-10291';
+  });
+
+  React.useEffect(() => {
+    const syncUser = () => {
+      const user = apiClient.getStoredUser();
+      const tracked = user?.meta?.tracked_parcels;
+      if (user?.role === 'CUSTOMER' && Array.isArray(tracked) && tracked.length > 0) {
+        setSelectedParcelId(tracked[0]);
+      }
+    };
+    syncUser();
+    const unsub = apiClient.onUserChange(syncUser);
+    return () => unsub();
+  }, [parcels]);
+
   const [chatMessages, setChatMessages] = useState<
     { sender: 'USER' | 'AI'; text: string; options?: string[]; timestamp: string }[]
   >([

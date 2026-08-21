@@ -21,6 +21,7 @@ import src.infrastructure.database.models.airport
 import src.infrastructure.database.models.route
 import src.infrastructure.database.models.driver
 import src.infrastructure.database.models.incident
+import src.infrastructure.database.models.user
 
 
 @pytest_asyncio.fixture(scope="function")

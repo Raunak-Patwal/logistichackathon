@@ -110,6 +110,7 @@ async def init_database() -> None:
     import src.infrastructure.database.models.driver
     import src.infrastructure.database.models.incident
     import src.infrastructure.database.models.incident_embedding
+    import src.infrastructure.database.models.user
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

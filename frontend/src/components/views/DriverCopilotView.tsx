@@ -24,9 +24,27 @@ export const DriverCopilotView: React.FC = () => {
   const parcels = useWorldModelStore((s) => s.parcels);
   const routes = useWorldModelStore((s) => s.routes);
 
-  const [selectedDriverId, setSelectedDriverId] = useState<string>(drivers[0]?.id || 'DRV-101');
+  const [selectedDriverId, setSelectedDriverId] = useState<string>(() => {
+    const user = apiClient.getStoredUser();
+    if (user?.role === 'DRIVER' && user.meta?.driver_id) {
+      return user.meta.driver_id;
+    }
+    return drivers[0]?.id || 'DRV-102';
+  });
   const [activeBypassApproved, setActiveBypassApproved] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    const syncUser = () => {
+      const user = apiClient.getStoredUser();
+      if (user?.role === 'DRIVER' && user.meta?.driver_id) {
+        setSelectedDriverId(user.meta.driver_id);
+      }
+    };
+    syncUser();
+    const unsub = apiClient.onUserChange(syncUser);
+    return () => unsub();
+  }, [drivers]);
 
   const activeDriver = drivers.find((d) => d.id === selectedDriverId) || drivers[0];
   const assignedTruck = trucks.find((t) => t.id === activeDriver?.assigned_truck_id) || trucks[0];

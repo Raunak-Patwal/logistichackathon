@@ -175,23 +175,45 @@ export const OperationsCopilotPanel: React.FC = () => {
                   Shift incoming Truck T-184 manifest to Auxiliary Scanner Bay B. Re-order cold-chain priority staging to eliminate 35-min delay.
                 </p>
 
-                <button
-                  className="cyber-btn"
-                  onClick={handleExecuteMitigation}
-                  disabled={executing}
-                  style={{
-                    padding: '8px 12px',
-                    fontWeight: 700,
-                    fontSize: '0.78rem',
-                    justifyContent: 'center',
-                    background: 'linear-gradient(135deg, #00f0ff 0%, #0284c7 100%)',
-                    color: '#040711',
-                    marginTop: '4px',
-                  }}
-                >
-                  <Zap size={13} />
-                  <span>{executing ? 'COMMITTING TO POSTGRESQL...' : 'EXECUTE MITIGATION (1-CLICK DUAL-COMMIT)'}</span>
-                </button>
+                {apiClient.canExecuteActions() ? (
+                  <button
+                    className="cyber-btn"
+                    onClick={handleExecuteMitigation}
+                    disabled={executing}
+                    style={{
+                      padding: '8px 12px',
+                      fontWeight: 700,
+                      fontSize: '0.78rem',
+                      justifyContent: 'center',
+                      background: 'linear-gradient(135deg, #00f0ff 0%, #0284c7 100%)',
+                      color: '#040711',
+                      marginTop: '4px',
+                    }}
+                  >
+                    <Zap size={13} />
+                    <span>{executing ? 'COMMITTING TO POSTGRESQL...' : 'EXECUTE MITIGATION (1-CLICK DUAL-COMMIT)'}</span>
+                  </button>
+                ) : (
+                  <div
+                    style={{
+                      marginTop: '4px',
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      background: 'rgba(245, 158, 11, 0.12)',
+                      border: '1px solid rgba(245, 158, 11, 0.35)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      color: '#f59e0b',
+                      fontSize: '0.74rem',
+                      fontFamily: 'Space Grotesk, sans-serif',
+                      fontWeight: 600,
+                    }}
+                  >
+                    <ShieldCheck size={14} color="#f59e0b" />
+                    <span>RESTRICTED: Requires DISPATCHER or ADMIN role to execute countermeasures</span>
+                  </div>
+                )}
               </div>
             </>
           ) : (

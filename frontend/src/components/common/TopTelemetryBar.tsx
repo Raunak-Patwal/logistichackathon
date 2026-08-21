@@ -3,23 +3,19 @@ import {
   Activity,
   ShieldCheck,
   Zap,
-  Radio,
-  Sliders,
   Send,
-  Compass,
-  Eye,
-  EyeOff,
   Cpu,
-  UserCheck,
   Globe,
   Package,
   Truck,
   TrendingUp,
   Server,
+  UserCheck,
+  Lock,
 } from 'lucide-react';
 import { useWorldModelStore } from '../../state/useWorldModelStore';
-import { useUIStore } from '../../state/useUIStore';
-import { apiClient } from '../../api/client';
+import { useUIStore, PersonaMode } from '../../state/useUIStore';
+import { apiClient, AuthUser, FALLBACK_DEMO_USERS } from '../../api/client';
 
 export const TopTelemetryBar: React.FC = () => {
   const telemetry = useWorldModelStore((s) => s.telemetry);
@@ -28,25 +24,62 @@ export const TopTelemetryBar: React.FC = () => {
   const activePersona = useUIStore((s) => s.activePersona);
   const setActivePersona = useUIStore((s) => s.setActivePersona);
   const setEventInjectorOpen = useUIStore((s) => s.setEventInjectorOpen);
-  const setScenarioModalOpen = useUIStore((s) => s.setScenarioModalOpen);
   const setSystemDiagnosticsModalOpen = useUIStore((s) => s.setSystemDiagnosticsModalOpen);
+  const setAuthModalOpen = useUIStore((s) => s.setAuthModalOpen);
 
   const [utcTime, setUtcTime] = useState<string>('');
-  const [currentUser, setCurrentUser] = useState<{ username: string; role: string } | null>(null);
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(apiClient.getStoredUser());
 
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
       setUtcTime(now.toUTCString().replace('GMT', 'UTC').slice(17, 25) + ' UTC');
-      const stored = apiClient.getStoredUser();
-      setCurrentUser(stored || { username: 'dispatcher_delhi', role: 'DISPATCHER' });
     };
     updateTime();
     const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
+
+    const stored = apiClient.getStoredUser();
+    if (stored) {
+      setCurrentUser(stored);
+    } else {
+      const defaultUser: AuthUser = {
+        username: 'dispatcher_delhi',
+        role: 'DISPATCHER',
+        persona: 'OPERATIONS',
+        full_name: 'Rajesh Varma',
+        permissions: ['*'],
+        assigned_entity_id: 'W12',
+      };
+      setCurrentUser(defaultUser);
+    }
+
+    const unsubscribe = apiClient.onUserChange((user) => {
+      setCurrentUser(user);
+    });
+
+    return () => {
+      clearInterval(interval);
+      unsubscribe();
+    };
   }, []);
 
-  const activeIncidentsCount = incidents.filter((i) => i.status !== 'RESOLVED').length;
+  const getRoleBadgeStyle = (role?: string) => {
+    switch (role) {
+      case 'ADMIN':
+        return { bg: 'rgba(236, 72, 153, 0.15)', border: '#ec4899', text: '#ec4899' };
+      case 'DRIVER':
+        return { bg: 'rgba(245, 158, 11, 0.15)', border: '#f59e0b', text: '#f59e0b' };
+      case 'CUSTOMER':
+        return { bg: 'rgba(16, 185, 129, 0.15)', border: '#10b981', text: '#10b981' };
+      case 'EXECUTIVE':
+        return { bg: 'rgba(168, 85, 247, 0.15)', border: '#a855f7', text: '#a855f7' };
+      case 'DISPATCHER':
+      default:
+        return { bg: 'rgba(0, 240, 255, 0.15)', border: '#00f0ff', text: '#00f0ff' };
+    }
+  };
+
+  const badgeStyle = getRoleBadgeStyle(currentUser?.role);
 
   return (
     <header
@@ -124,7 +157,7 @@ export const TopTelemetryBar: React.FC = () => {
           return (
             <button
               key={p.id}
-              onClick={() => setActivePersona(p.id as any)}
+              onClick={() => setActivePersona(p.id as PersonaMode)}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -155,6 +188,92 @@ export const TopTelemetryBar: React.FC = () => {
 
       {/* Right Telemetry & Quick Action Menu */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        {/* Interactive User Persona & RBAC Pill */}
+        <button
+          onClick={() => setAuthModalOpen(true)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '3px 10px 3px 5px',
+            borderRadius: '9999px',
+            background: badgeStyle.bg,
+            border: `1px solid ${badgeStyle.border}`,
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            outline: 'none',
+          }}
+          title="Click to Switch Stakeholder Identity, Sign in with Google, or Inspect JWT Claims"
+        >
+          {currentUser?.avatar_url ? (
+            <img
+              src={currentUser.avatar_url}
+              alt={currentUser.full_name}
+              style={{
+                width: '24px',
+                height: '24px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                border: `1.5px solid ${badgeStyle.border}`,
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                width: '22px',
+                height: '22px',
+                borderRadius: '50%',
+                background: badgeStyle.border,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <UserCheck size={12} color="#040711" strokeWidth={2.5} />
+            </div>
+          )}
+
+          <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left', lineHeight: 1.1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span
+                style={{
+                  fontSize: '0.74rem',
+                  fontWeight: 700,
+                  color: '#f8fafc',
+                  fontFamily: 'Space Grotesk, sans-serif',
+                }}
+              >
+                {currentUser?.full_name || currentUser?.username || 'Dispatcher'}
+              </span>
+              {currentUser?.auth_provider === 'google' && (
+                <span
+                  style={{
+                    fontSize: '9px',
+                    fontFamily: 'JetBrains Mono, monospace',
+                    fontWeight: 700,
+                    color: '#4285F4',
+                    background: 'rgba(66, 133, 244, 0.18)',
+                    padding: '0 3px',
+                    borderRadius: '2px',
+                  }}
+                >
+                  G
+                </span>
+              )}
+            </div>
+            <span
+              className="font-mono"
+              style={{
+                fontSize: '0.6rem',
+                color: badgeStyle.text,
+                fontWeight: 700,
+              }}
+            >
+              {currentUser?.role || 'DISPATCHER'}
+            </span>
+          </div>
+        </button>
+
         {/* Live Status Pill */}
         <div
           style={{
@@ -196,14 +315,23 @@ export const TopTelemetryBar: React.FC = () => {
           {utcTime}
         </span>
 
-        {/* Inject Event */}
+        {/* Inject Event - RBAC Protected */}
         <button
           className="cyber-btn"
           onClick={() => setEventInjectorOpen(true)}
-          style={{ padding: '5px 10px', fontSize: '0.72rem', borderRadius: '9999px' }}
-          title="Inject Live ULEO Event"
+          style={{
+            padding: '5px 10px',
+            fontSize: '0.72rem',
+            borderRadius: '9999px',
+            opacity: apiClient.canInjectEvents() ? 1 : 0.75,
+          }}
+          title={
+            apiClient.canInjectEvents()
+              ? 'Inject Live ULEO Event'
+              : 'Restricted: Requires DISPATCHER or ADMIN role (Read-Only Viewer)'
+          }
         >
-          <Send size={11} color="#00f0ff" />
+          {apiClient.canInjectEvents() ? <Send size={11} color="#00f0ff" /> : <Lock size={11} color="#f59e0b" />}
           <span>INJECT</span>
         </button>
 

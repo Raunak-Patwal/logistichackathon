@@ -58,6 +58,13 @@ services:
       - GEMINI_API_KEY=${GEMINI_API_KEY:-}
       - GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.5-flash}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:-SUPER_SECRET_LOGISTICS_BRAIN_KEY_CHANGE_IN_PROD}
+      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER:-patwalraunak@gmail.com}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-ndomklsccabpmcbp}
+      - SMTP_FROM_EMAIL=${SMTP_FROM_EMAIL:-patwalraunak@gmail.com}
+      - SMTP_FROM_NAME=${SMTP_FROM_NAME:-AI Logistics Brain Security}
+      - SMTP_TLS=true
     ports:
       - "8000:8000"
     volumes:

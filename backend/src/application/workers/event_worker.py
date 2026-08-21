@@ -174,6 +174,16 @@ class EventWorker:
                 or event_dict.get("parcel_id")
                 or (result.get("parcel_id") if isinstance(result, dict) else "UNKNOWN")
             )
+            entity_type = event_dict.get("entity_type", "PARCEL")
+            payload = event_dict.get("payload", {})
+
+            # --- ML ANOMALY DETECTION EVALUATION ---
+            from src.application.ai.ml_service import ml_service
+            is_anomaly, anomaly_reason, risk_score = ml_service.check_anomaly(entity_type, payload)
+            if is_anomaly:
+                logger.warning(
+                    f"⚠️ [ML ANOMALY DETECTED] {entity_type} {entity_id}: {anomaly_reason} (Risk: {risk_score*100:.1f}%)"
+                )
 
             broadcast_payload = {
                 "type": "DOMAIN_EVENT_PROCESSED",
@@ -181,6 +191,8 @@ class EventWorker:
                 "entity_id": entity_id,
                 "state": state,
                 "timestamp": event_dict.get("metadata", {}).get("timestamp"),
+                "is_anomaly": is_anomaly,
+                "anomaly_reason": anomaly_reason,
             }
             await redis_queue.publish_broadcast(broadcast_payload)
             logger.info(f"Committed & Broadcasted event {event_dict.get('event_type')} for {entity_id}")

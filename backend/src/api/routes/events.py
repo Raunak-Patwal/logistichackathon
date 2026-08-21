@@ -21,28 +21,24 @@ async def ingest_event(
 ):
     """
     Primary Ingestion Gateway (Phase 1 Observe).
-    Ingests canonical ULEO v0.1 domain events with Redis Stream queuing,
-    atomic dual-commit to PostgreSQL, and real-time WebSocket broadcasting.
+    Ingests canonical ULEO v0.1 domain events with atomic dual-commit to PostgreSQL,
+    and real-time WebSocket broadcasting.
     """
     try:
-        # 1. Enqueue to Redis Event Stream
-        event_dict = request.model_dump()
-        stream_id = await redis_queue.enqueue_event(event_dict)
-
-        # 2. Atomic Dual-Commit in PostgreSQL
+        # 1. Atomic Dual-Commit in PostgreSQL
         service = ParcelApplicationService(session)
         result = await service.process_event(request)
 
-        # 3. Broadcast committed state change to WebSockets
+        # 2. Broadcast committed state change to WebSockets & Redis Pub/Sub
         await redis_queue.publish_broadcast({
             "type": "DOMAIN_EVENT_PROCESSED",
             "event_type": request.event_type,
             "entity_id": request.entity_id,
+            "entity_type": request.entity_type,
             "state": result.get("state", "ACCEPTED"),
-            "queue_id": stream_id,
+            "payload": request.payload,
         })
 
-        result["queue_id"] = stream_id
         return result
     except InvalidStateTransitionError as e:
         raise HTTPException(

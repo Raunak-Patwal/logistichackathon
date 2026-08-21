@@ -1,0 +1,30 @@
+{
+  "model_metadata": {
+    "name": "AI Logistics Brain ML Suite",
+    "version": "1.2.0",
+    "trained_samples": 10000,
+    "validation_mae_mins": 31.29,
+    "corridors": [
+      "NH-48",
+      "NH-44",
+      "NH-16",
+      "NH-65"
+    ]
+  },
+  "eta_weights": {
+    "base_speed_kmh": 63.8,
+    "weight_penalty_coeff": 0.00092,
+    "congestion_exponent": 1.16,
+    "fatigue_delay_coeff": 2.65,
+    "weather_delay_max_mins": 48.5,
+    "intercept": 11.2
+  },
+  "anomaly_thresholds": {
+    "max_dock_dwell_mins": 32.0,
+    "min_scanner_throughput_eps": 0.4,
+    "max_temp_celsius_cold_chain": 6.0,
+    "min_temp_celsius_cold_chain": 2.0,
+    "max_speed_kmh": 92.0,
+    "z_score_cutoff": 2.4
+  }
+}

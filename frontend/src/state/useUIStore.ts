@@ -44,6 +44,7 @@ interface UIState {
   eventInjectorOpen: boolean;
   scenarioModalOpen: boolean;
   systemDiagnosticsModalOpen: boolean;
+  authModalOpen: boolean;
   reducedMotion: boolean;
   bootSequenceComplete: boolean;
   isReplayingSignature: boolean;
@@ -58,6 +59,7 @@ interface UIState {
   setEventInjectorOpen: (open: boolean) => void;
   setScenarioModalOpen: (open: boolean) => void;
   setSystemDiagnosticsModalOpen: (open: boolean) => void;
+  setAuthModalOpen: (open: boolean) => void;
   toggleReducedMotion: () => void;
   completeBootSequence: () => void;
   followEvent: (event: DomainEvent, entityPosition?: [number, number, number]) => void;
@@ -77,6 +79,7 @@ export const useUIStore = create<UIState>((set, get) => ({
   eventInjectorOpen: false,
   scenarioModalOpen: false,
   systemDiagnosticsModalOpen: false,
+  authModalOpen: false,
   reducedMotion: false,
   bootSequenceComplete: false,
   isReplayingSignature: false,
@@ -84,6 +87,7 @@ export const useUIStore = create<UIState>((set, get) => ({
   setActivePersona: (persona) => set({ activePersona: persona }),
   setActiveView: (view) => set({ activeView: view }),
   setSystemDiagnosticsModalOpen: (open) => set({ systemDiagnosticsModalOpen: open }),
+  setAuthModalOpen: (open) => set({ authModalOpen: open }),
 
   selectEntity: (type, id, position) => {
     if (!type || !id) {
