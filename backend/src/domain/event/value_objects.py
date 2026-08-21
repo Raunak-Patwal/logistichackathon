@@ -74,4 +74,4 @@ class DomainEvent:
         if not self.entity_id.strip():
             raise ValueError("entity_id must be provided")
         if not isinstance(self.payload, dict):
-            raise TypeError("payload must be a dictionary")
+            raise TypeError("payload must be a dictionary")

@@ -41,13 +41,13 @@ USER appuser
 COPY --chown=appuser:appuser src/ ./src/
 COPY --chown=appuser:appuser scripts/ ./scripts/
 
-# Ensure entrypoint script is executable
-RUN chmod +x ./scripts/entrypoint.sh
+# Ensure entrypoint script has Unix line endings and is executable
+RUN sed -i 's/\r$//' ./scripts/entrypoint.sh && chmod +x ./scripts/entrypoint.sh
 
 # Expose FastAPI port
 EXPOSE 8000
 
 # Use the entrypoint script to run migrations/seeder before starting uvicorn
-ENTRYPOINT ["./scripts/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "./scripts/entrypoint.sh"]
 CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
 

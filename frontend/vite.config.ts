@@ -10,7 +10,14 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000,
+    port: 80,
     host: true,
+    strictPort: true,
+    watch: {
+      usePolling: true,
+    },
+    hmr: {
+      clientPort: 80,
+    },
   },
 });

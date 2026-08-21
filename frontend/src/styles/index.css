@@ -1,13 +1,17 @@
 @import './tokens.css';
 
 /* Global Reset & Base */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -29,7 +33,7 @@ body::before {
   height: 100vh;
   pointer-events: none;
   z-index: 1;
-  background: 
+  background:
     radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.03) 0%, transparent 70%),
     linear-gradient(rgba(0, 240, 255, 0.02) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 240, 255, 0.02) 1px, transparent 1px);
@@ -69,17 +73,52 @@ body::before {
   font-family: var(--font-cyber);
 }
 
-.text-xs { font-size: 0.72rem; line-height: 1rem; }
-.text-sm { font-size: 0.82rem; line-height: 1.25rem; }
-.text-base { font-size: 0.92rem; line-height: 1.4rem; }
-.text-lg { font-size: 1.15rem; line-height: 1.5rem; }
-.text-xl { font-size: 1.4rem; line-height: 1.75rem; }
-.text-2xl { font-size: 1.85rem; line-height: 2.1rem; }
-.text-3xl { font-size: 2.2rem; line-height: 2.5rem; }
+.text-xs {
+  font-size: 0.72rem;
+  line-height: 1rem;
+}
 
-.tracking-wider { letter-spacing: 0.08em; }
-.tracking-widest { letter-spacing: 0.18em; }
-.uppercase { text-transform: uppercase; }
+.text-sm {
+  font-size: 0.82rem;
+  line-height: 1.25rem;
+}
+
+.text-base {
+  font-size: 0.92rem;
+  line-height: 1.4rem;
+}
+
+.text-lg {
+  font-size: 1.15rem;
+  line-height: 1.5rem;
+}
+
+.text-xl {
+  font-size: 1.4rem;
+  line-height: 1.75rem;
+}
+
+.text-2xl {
+  font-size: 1.85rem;
+  line-height: 2.1rem;
+}
+
+.text-3xl {
+  font-size: 2.2rem;
+  line-height: 2.5rem;
+}
+
+.tracking-wider {
+  letter-spacing: 0.08em;
+}
+
+.tracking-widest {
+  letter-spacing: 0.18em;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
 
 /* 100X Award-Winning Floating Header & Glass UI System */
 .floating-glass-bar {
@@ -131,6 +170,7 @@ body::before {
     opacity: 0;
     transform: translateX(40px) scale(0.98);
   }
+
   to {
     opacity: 1;
     transform: translateX(0) scale(1);
@@ -154,6 +194,7 @@ body::before {
     opacity: 0;
     transform: translateY(12px) scale(0.99);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -172,19 +213,20 @@ body::before {
   overflow: hidden;
 }
 
+.glass-card,
 .tactical-glass-card {
-  background: var(--bg-glass-card);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--border-subtle);
+  background: rgba(6, 11, 24, 0.3);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(0, 240, 255, 0.25);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-panel);
   transition: all var(--transition-normal);
 }
 
+.glass-card:hover,
 .tactical-glass-card:hover {
-  border-color: var(--border-accent);
-  box-shadow: var(--shadow-overlay);
+  border-color: rgba(0, 240, 255, 0.45);
+  box-shadow: 0 20px 56px rgba(0, 0, 0, 0.92), 0 0 25px rgba(0, 240, 255, 0.2);
 }
 
 .tactical-panel-solid {
@@ -287,10 +329,13 @@ body::before {
 
 /* Animated Pulse Glows */
 @keyframes neon-pulse-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.7;
     filter: drop-shadow(0 0 8px var(--accent-cyan));
   }
+
   50% {
     opacity: 1;
     filter: drop-shadow(0 0 20px var(--accent-cyan));
@@ -302,8 +347,13 @@ body::before {
 }
 
 @keyframes radar-sweep {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .animate-radar-sweep {
@@ -392,13 +442,33 @@ body::before {
 }
 
 @keyframes pulse-dot {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.35); opacity: 0.6; }
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.35);
+    opacity: 0.6;
+  }
 }
 
 @keyframes pulse-critical {
-  0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 8px var(--color-critical)); }
-  50% { transform: scale(1.6); opacity: 0.4; filter: drop-shadow(0 0 16px var(--color-critical)); }
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    filter: drop-shadow(0 0 8px var(--color-critical));
+  }
+
+  50% {
+    transform: scale(1.6);
+    opacity: 0.4;
+    filter: drop-shadow(0 0 16px var(--color-critical));
+  }
 }
 
 /* Tactical Buttons */
@@ -458,17 +528,30 @@ body::before {
 /* Spatial Grid Background Lines */
 .bg-grid-pattern {
   background-size: 40px 40px;
-  background-image: 
+  background-image:
     linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
 }
 
 /* Reduced Motion Mode Support */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* 3D HUD Tag Hover & Elevation */
+.hud-node-card:hover,
+.hud-airport-badge:hover,
+.hud-truck-tag:hover,
+.hud-incident-tag:hover {
+  transform: scale(1.08) translateY(-2px);
+  z-index: 999 !important;
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.75) !important;
 }

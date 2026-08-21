@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { WorldCanvas } from './components/world3d/WorldCanvas';
+import { World2DMap } from './components/world2d/World2DMap';
+import { MapModeSwitcher } from './components/common/MapModeSwitcher';
 import { TopTelemetryBar } from './components/common/TopTelemetryBar';
 import { NavRail } from './components/common/NavRail';
 import { BootSequence } from './components/common/BootSequence';
@@ -35,6 +37,8 @@ export const App: React.FC = () => {
   const activePersona = useUIStore((s) => s.activePersona);
   const setActivePersona = useUIStore((s) => s.setActivePersona);
   const activeView = useUIStore((s) => s.activeView);
+  const mapMode = useUIStore((s) => s.mapMode);
+  const toggleMapMode = useUIStore((s) => s.toggleMapMode);
   const bootSequenceComplete = useUIStore((s) => s.bootSequenceComplete);
   const setAuthModalOpen = useUIStore((s) => s.setAuthModalOpen);
 
@@ -55,11 +59,23 @@ export const App: React.FC = () => {
       setCurrentUser(user);
     });
 
+    // 5. Global Keyboard Shortcut: 'M' to toggle between 2D & 3D maps
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        (e.key === 'm' || e.key === 'M') &&
+        !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)
+      ) {
+        toggleMapMode();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
     return () => {
       simulationEngine.stop();
       unsubscribe();
+      window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [toggleMapMode]);
 
   // Determine if active persona is allowed for the logged in user
   const isPersonaAllowed = () => {
@@ -206,10 +222,10 @@ export const App: React.FC = () => {
       {/* Navigation Rail */}
       {allowed && <NavRail />}
 
-      {/* 1. OPERATIONS PERSONA: 3D World Digital Twin & Mission Control */}
+      {/* 1. OPERATIONS PERSONA: 3D World Digital Twin & 2D Tactical GIS Map */}
       {allowed && activePersona === 'OPERATIONS' && (
         <>
-          <WorldCanvas />
+          {mapMode === '3D' ? <WorldCanvas /> : <World2DMap />}
 
           {/* Floating Operational Views */}
           {activeView === 'WORLD' && (
@@ -227,8 +243,9 @@ export const App: React.FC = () => {
           {activeView === 'PHASES' && <PhaseRoadmapView />}
           {activeView === 'ARCHITECTURE' && <ArchitectureView />}
 
-          {/* Entity Inspector Drawer */}
+          {/* Floating Operations Copilot, Entity Inspector & Bottom-Right Mode Switcher */}
           <EntityInspector />
+          <MapModeSwitcher />
         </>
       )}
 

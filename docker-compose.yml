@@ -77,17 +77,21 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
       args:
-        # For local Docker testing, we route to localhost:8000
-        # In cloud prod, change this to your actual API domain
-        - VITE_API_URL=http://localhost:8000/api/v1 
+        - VITE_API_URL=http://localhost:8000/api/v1
     container_name: logistics_frontend
     restart: unless-stopped
     depends_on:
       - backend
     ports:
       - "80:80"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
 
 volumes:
   postgres_data:

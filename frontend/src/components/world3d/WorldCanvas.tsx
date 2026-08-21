@@ -10,6 +10,7 @@ import { IncidentMarker } from './IncidentMarker';
 import { ParcelMarker } from './ParcelMarker';
 import { EventPulseSystem } from './EventPulseSystem';
 import { CinematicCamera } from './CinematicCamera';
+import { EffectPipeline } from './EffectPipeline';
 import { useWorldModelStore } from '../../state/useWorldModelStore';
 import { useUIStore } from '../../state/useUIStore';
 
@@ -63,6 +64,7 @@ export const WorldCanvas: React.FC = () => {
       >
         <Suspense fallback={null}>
           <SceneEnvironment />
+          <EffectPipeline />
           <SpatialGrid />
 
           {/* Logistics Routes */}
